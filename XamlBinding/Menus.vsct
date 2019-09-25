@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+
+  <Commands package="guidPackage">
+    <Buttons>
+      <Button guid="guidPackageCmdSet" id="ToolWindowCommandId" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <Icon guid="guidImages" id="bmpCommandIcon" />
+        <Strings>
+          <ButtonText>XAML Binding Errors</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+    <Bitmaps>
+      <Bitmap guid="guidImages" href="Resources\ToolWindowCommand.png" usedList="bmpCommandIcon"/>
+    </Bitmaps>
+  </Commands>
+
+  <Symbols>
+    <GuidSymbol name="guidPackage" value="{08f93eba-7555-4ccb-9cea-82925fcbe8ff}" />
+    <GuidSymbol name="guidPackageCmdSet" value="{418ab65f-8c3a-470a-8bef-7dfa5f82364a}">
+      <IDSymbol name="ToolWindowCommandId" value="0x0100" />
+    </GuidSymbol>
+    <GuidSymbol name="guidImages" value="{2e47d056-94f1-4c81-920f-42b390524fe5}" >
+      <IDSymbol name="bmpCommandIcon" value="1" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>
