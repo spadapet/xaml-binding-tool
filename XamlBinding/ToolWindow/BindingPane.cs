@@ -28,7 +28,7 @@ namespace XamlBinding.ToolWindow
         , IVsWindowFrameNotify2
         , IVsDebuggerEvents
     {
-        private Telemetry telemetry;
+        private readonly Telemetry telemetry;
         private ITextBuffer debugTextBuffer;
         private ITrackingPoint lastTextPoint;
         private RegistryKey dataBindingOutputLevelKey;

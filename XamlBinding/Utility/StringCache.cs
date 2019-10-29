@@ -8,7 +8,7 @@ namespace XamlBinding.Utility
     /// </summary>
     internal class StringCache
     {
-        private ConcurrentDictionary<string, string> cache;
+        private readonly ConcurrentDictionary<string, string> cache;
 
         public StringCache()
         {

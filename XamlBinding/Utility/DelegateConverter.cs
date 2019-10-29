@@ -8,8 +8,8 @@ namespace XamlBinding.Utility
     {
         public delegate object ConvertFunc(object value, Type targetType, object parameter);
 
-        private DelegateConverter.ConvertFunc convert;
-        private DelegateConverter.ConvertFunc convertBack;
+        private readonly DelegateConverter.ConvertFunc convert;
+        private readonly DelegateConverter.ConvertFunc convertBack;
 
         public DelegateConverter(DelegateConverter.ConvertFunc convert, DelegateConverter.ConvertFunc convertBack = null)
         {

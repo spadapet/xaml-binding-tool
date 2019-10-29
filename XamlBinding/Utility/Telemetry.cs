@@ -14,9 +14,10 @@ namespace XamlBinding.Utility
     /// </summary>
     internal class Telemetry : IDisposable
     {
-        private SolutionOptions options;
-        private TelemetryConfiguration config;
-        private TelemetryClient client;
+        private readonly SolutionOptions options;
+        private readonly TelemetryConfiguration config;
+        private readonly TelemetryClient client;
+        private bool disposed;
 
         public Telemetry()
         {
@@ -26,30 +27,38 @@ namespace XamlBinding.Utility
         public Telemetry(SolutionOptions options)
         {
             this.options = options;
-            this.config = new TelemetryConfiguration(Constants.ApplicationInsightsInstrumentationKeyString);
-#if DEBUG
-            this.config.TelemetryChannel.DeveloperMode = true;
-#endif
-            this.client = new TelemetryClient(this.config);
-            this.client.Context.Cloud.RoleInstance = "null";
-            this.client.Context.Component.Version = this.GetType().Assembly.GetName().Version.ToString();
-            this.client.Context.Session.Id = Guid.NewGuid().ToString();
-            this.client.Context.User.Id = this.GetUserId();
 
-            this.options.PropertyChanged += this.OnOptionChanged;
+            try
+            {
+                this.config = new TelemetryConfiguration(Constants.ApplicationInsightsInstrumentationKeyString);
+#if DEBUG
+                this.config.TelemetryChannel.DeveloperMode = true;
+#endif
+                this.client = new TelemetryClient(this.config);
+                this.client.Context.Cloud.RoleInstance = "null";
+                this.client.Context.Component.Version = this.GetType().Assembly.GetName().Version.ToString();
+                this.client.Context.Session.Id = Guid.NewGuid().ToString();
+                this.client.Context.User.Id = this.GetUserId();
+
+                this.options.PropertyChanged += this.OnOptionChanged;
+            }
+            catch
+            {
+                // Can't log telemetry if App Insights fails to load, pretend that I have been disposed
+                this.disposed = true;
+            }
         }
 
         public void Dispose()
         {
-            if (this.client != null)
+            if (!this.disposed)
             {
+                this.disposed = true;
+
                 this.options.PropertyChanged -= this.OnOptionChanged;
 
                 this.client.Flush();
                 this.config.Dispose();
-
-                this.client = null;
-                this.config = null;
             }
         }
 
@@ -71,7 +80,7 @@ namespace XamlBinding.Utility
 
         public void TrackEvent(string eventName, IEnumerable<KeyValuePair<string, object>> properties = null)
         {
-            if (this.client != null && !string.IsNullOrEmpty(eventName))
+            if (!this.disposed && !string.IsNullOrEmpty(eventName))
             {
                 Telemetry.ConvertProperties(properties,
                     out Dictionary<string, string> eventProperties,
@@ -85,7 +94,7 @@ namespace XamlBinding.Utility
 
         public void TrackException(Exception exception, IEnumerable<KeyValuePair<string, object>> properties = null)
         {
-            if (this.client != null && exception != null)
+            if (!this.disposed && exception != null)
             {
                 Telemetry.ConvertProperties(properties,
                     out Dictionary<string, string> eventProperties,

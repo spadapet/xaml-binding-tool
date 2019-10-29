@@ -26,7 +26,7 @@ namespace XamlBinding.ToolWindow
         public string TargetProperty { get; }
         public string TargetPropertyType { get; }
 
-        private StringCache stringCache;
+        private readonly StringCache stringCache;
         private int hashCode;
 
         public BindingEntry(int errorCode, Match match, StringCache stringCache)
