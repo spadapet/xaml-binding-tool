@@ -103,9 +103,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\CommandLocation.png" />
-    <None Include="Resources\Logo128.png" />
+    <Content Include="Resources\Logo128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\ToolWindowCommand.png" />
-    <None Include="Resources\Sample.png" />
+    <Content Include="Resources\Sample.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <VSCTCompile Include="Menus.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
