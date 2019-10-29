@@ -5,6 +5,6 @@ This is currently in the prototyping phase I figure out what features are most u
 
 Get to the tool window through a menu command (see the following screenshot) or it'll show up automatically when you debug a WPF app.
 
-![Command Location](https://raw.githubusercontent.com/spadapet/xaml-binding-tool/master/XamlBinding/CommandLocation.png)
+![Command Location](https://raw.githubusercontent.com/spadapet/xaml-binding-tool/master/XamlBinding/Resources/CommandLocation.png)
 
-![XAML Binding Errors](https://raw.githubusercontent.com/spadapet/xaml-binding-tool/master/XamlBinding/Sample.png)
+![XAML Binding Errors](https://raw.githubusercontent.com/spadapet/xaml-binding-tool/master/XamlBinding/Resources/Sample.png)
