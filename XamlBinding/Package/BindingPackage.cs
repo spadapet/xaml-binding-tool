@@ -18,7 +18,7 @@ namespace XamlBinding.Package
     /// </summary>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [ProvideToolWindow(typeof(BindingPane), Window = "DocumentWell", Orientation = ToolWindowOrientation.Top, Style = VsDockStyle.Tabbed)]
+    [ProvideToolWindow(typeof(BindingPane), Window = Constants.CallStackWindowString, Orientation = ToolWindowOrientation.Bottom, Style = VsDockStyle.Tabbed)]
     [ProvideToolWindowVisibility(typeof(BindingPane), Constants.BindingShowToolWindowString)]
     [Guid(Constants.PackageString)]
     internal sealed class BindingPackage : AsyncPackage
