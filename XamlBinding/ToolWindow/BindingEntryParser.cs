@@ -73,7 +73,7 @@ namespace XamlBinding.ToolWindow
             if (!textMatch.Success)
             {
                 Debug.Fail($"Failed to parse path error: {text}");
-                return this.ProcessUnknownError(BindingErrorCodes.PathError, match);
+                return null;
             }
 
             return new BindingEntry(BindingErrorCodes.PathError, textMatch, this.stringCache);
@@ -81,7 +81,7 @@ namespace XamlBinding.ToolWindow
 
         private BindingEntry ProcessUnknownError(int errorCode, Match match)
         {
-            return new BindingEntry(errorCode, match.Value, this.stringCache);
+            return new BindingEntry(errorCode, match.Groups["text"].Value, this.stringCache);
         }
 
         private static string CaptureItem(string groupType, string groupName)

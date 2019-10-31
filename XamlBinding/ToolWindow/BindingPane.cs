@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio;
+﻿using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -69,7 +71,7 @@ namespace XamlBinding.ToolWindow
             ThreadHelper.ThrowIfNotOnUIThread();
             this.telemetry.TrackEvent(Constants.EventInitializePane);
 
-            DebugOutputTextViewCreationListener.TextViewCreated += this.OnTextViewCreated;
+            this.BindingPackage.DebugOutputTextViewCreated += this.OnTextViewCreated;
 
             // Look up the value of WPF trace settings in the registry
             using (RegistryKey rootKey = VSRegistry.RegistryRoot(this, __VsLocalRegistryType.RegType_UserSettings, writable: true))
@@ -82,6 +84,12 @@ namespace XamlBinding.ToolWindow
             {
                 this.debuggerForCookie = debugger;
                 this.debuggerForCookie.AdviseDebuggerEvents(this, out this.debugCookie);
+
+                DBGMODE[] dbgMode = new DBGMODE[1];
+                if (ErrorHandler.Succeeded(debugger.GetMode(dbgMode)))
+                {
+                    this.viewModel.IsDebugging = dbgMode[0].HasFlag(DBGMODE.DBGMODE_Run) || dbgMode[0].HasFlag(DBGMODE.DBGMODE_Break);
+                }
             }
 
             this.AttachToDebugOutput();
@@ -111,7 +119,7 @@ namespace XamlBinding.ToolWindow
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            DebugOutputTextViewCreationListener.TextViewCreated -= this.OnTextViewCreated;
+            this.BindingPackage.DebugOutputTextViewCreated -= this.OnTextViewCreated;
 
             if (this.debugCookie != 0)
             {
@@ -204,7 +212,7 @@ namespace XamlBinding.ToolWindow
             }
         }
 
-        private void OnTextViewCreated(IWpfTextView textView)
+        private void OnTextViewCreated(ITextView textView)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -298,7 +306,11 @@ namespace XamlBinding.ToolWindow
                 this.viewModel.IsDebugging = true;
                 this.viewModel.ClearEntries();
             }
-            else if (!dbgmodeNew.HasFlag(DBGMODE.DBGMODE_Break))
+            else if (dbgmodeNew.HasFlag(DBGMODE.DBGMODE_Break))
+            {
+                this.viewModel.IsDebugging = true;
+            }
+            else
             {
                 this.telemetry.TrackEvent(Constants.EventDebugEnd, this.viewModel.GetEntryTelemetryProperties());
                 this.viewModel.IsDebugging = false;
