@@ -3,7 +3,7 @@ using System.Resources;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("XAML Binding")]
-[assembly: AssemblyDescription("Provides a tool window that shows XAML binding errors while debugging in Visual Studio 2019.")]
+[assembly: AssemblyDescription("Provides a tool window that shows XAML binding failures while debugging in Visual Studio 2019.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Peter Spada")]
 [assembly: AssemblyProduct("XAML Binding")]

@@ -1,5 +1,8 @@
-﻿using Microsoft.VisualStudio.Shell;
+﻿using Microsoft.Internal.VisualStudio.Shell.TableControl;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Shell.TableManager;
 using System;
 using System.ComponentModel.Design;
 using System.IO;
@@ -8,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using XamlBinding.Resources;
 using XamlBinding.ToolWindow;
+using XamlBinding.ToolWindow.Table;
 using XamlBinding.Utility;
 using Task = System.Threading.Tasks.Task;
 
@@ -19,25 +23,49 @@ namespace XamlBinding.Package
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(BindingPane), Window = Constants.CallStackWindowString, Orientation = ToolWindowOrientation.Bottom, Style = VsDockStyle.Tabbed)]
-    [ProvideToolWindowVisibility(typeof(BindingPane), Constants.BindingShowToolWindowString)]
-    [Guid(Constants.PackageString)]
+    [ProvideToolWindowVisibility(typeof(BindingPane), Constants.ShowBindingPaneContextString)]
+    [Guid(Constants.BindingPackageString)]
     internal sealed class BindingPackage : AsyncPackage
     {
+        public IComponentModel ComponentModel { get; private set; }
+        public IWpfTableControlProvider TableControlProvider { get; private set; }
+        public ITableManager TableManager { get; private set; }
+        public Telemetry Telemetry { get; private set; }
+
         private SolutionOptions options;
-        private Telemetry telemetry;
+        private IDisposable registeredTableColumns;
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            this.ComponentModel = await this.GetServiceAsync<SComponentModel, IComponentModel>();
 
             this.options = new SolutionOptions();
             this.AddOptionKey(Constants.SolutionOptionKey);
 
-            this.telemetry = new Telemetry(this.options);
-            this.telemetry.TrackEvent(Constants.EventInitializePackage);
+            this.Telemetry = new Telemetry(this.options);
+            this.Telemetry.TrackEvent(Constants.EventInitializePackage);
 
+            await this.InitializeTableAsync();
+            await this.InitializeMenuCommandsAsync();
+        }
+
+        private async Task InitializeTableAsync()
+        {
+            ITableManagerProvider tableManagerProvider = this.ComponentModel.GetService<ITableManagerProvider>();
+            this.TableControlProvider = this.ComponentModel.GetService<IWpfTableControlProvider>();
+
+            await Task.Run(() =>
+            {
+                this.TableManager = tableManagerProvider.GetTableManager(Constants.TableManagerString);
+                this.registeredTableColumns = TableColumn.RegisterColumnDefinitions(this.TableControlProvider);
+            });
+        }
+
+        private async Task InitializeMenuCommandsAsync()
+        {
             // Add a command handler for showing the tool window
-            CommandID menuCommandID = new CommandID(Constants.GuidCommandSet, Constants.BindingToolWindowCommandId);
+            CommandID menuCommandID = new CommandID(Constants.GuidPackageCommandSet, Constants.BindingPaneCommandId);
             MenuCommand menuItem = new MenuCommand((s, a) => this.ShowBindingPane(), menuCommandID);
             OleMenuCommandService commandService = await this.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             commandService?.AddCommand(menuItem);
@@ -47,7 +75,8 @@ namespace XamlBinding.Package
         {
             if (disposing)
             {
-                this.telemetry.Dispose();
+                this.Telemetry?.Dispose();
+                this.registeredTableColumns?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -80,7 +109,7 @@ namespace XamlBinding.Package
             if (toolWindowType == typeof(BindingPane))
             {
                 // Return value passed to BindingPane constructor
-                return Task.FromResult<object>(this.telemetry);
+                return Task.FromResult<object>(this);
             }
 
             return base.InitializeToolWindowAsync(toolWindowType, id, cancellationToken);

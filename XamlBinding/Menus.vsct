@@ -4,30 +4,86 @@
     <Extern href="vsshlids.h"/>
 
     <Commands package="guidPackage">
-        <Buttons>
-            <Button guid="guidPackageCmdSet" id="ToolWindowCommandId" priority="0x0300" type="Button">
-                <Parent guid="guidVSDebugGroup" id="IDG_DEBUG_WINDOWS_GENERAL" />
-                <Icon guid="guidImages" id="bmpCommandIcon" />
+        <Menus>
+            <Menu guid="guidBindingPaneCmdSet" id="Toolbar" type="Toolbar">
+                <CommandFlag>DefaultDocked</CommandFlag>
                 <Strings>
-                    <ButtonText>XAML Binding Errors</ButtonText>
+                    <ButtonText>XAML Binding Failures Toolbar</ButtonText>
+                    <CommandName>XAML Binding Failures Toolbar</CommandName>
+                </Strings>
+            </Menu>
+        </Menus>
+        <Groups>
+            <Group guid="guidBindingPaneCmdSet" id="ToolbarGroup" priority="0x0000">
+                <Parent guid="guidBindingPaneCmdSet" id="Toolbar"/>
+            </Group>
+        </Groups>
+        <Buttons>
+            <Button guid="guidPackageCmdSet" id="BindingPaneCommandId" priority="0x0300" type="Button">
+                <Parent guid="guidVSDebugGroup" id="IDG_DEBUG_WINDOWS_GENERAL" />
+                <Icon guid="guidImages" id="BindingPaneCommandIcon" />
+                <Strings>
+                    <ButtonText>XAML Binding Failures</ButtonText>
+                </Strings>
+            </Button>
+            <Button guid="guidBindingPaneCmdSet" id="ClearCommandId" priority="0x0100" type="Button">
+                <Parent guid="guidBindingPaneCmdSet" id="ToolbarGroup" />
+                <Icon guid="guidImageCatalog" id="ClearWindowContent" />
+                <CommandFlag>IconAndText</CommandFlag>
+                <CommandFlag>IconIsMoniker</CommandFlag>
+                <Strings>
+                    <ButtonText>Clear</ButtonText>
+                    <CommandName>Clear</CommandName>
+                    <ToolTipText>Clear the list of failures</ToolTipText>
+                </Strings>
+            </Button>
+            <Button guid="guidBindingPaneCmdSet" id="TraceLevelOptionsId" priority="0x0102" type="Button">
+                <Parent guid="guidBindingPaneCmdSet" id="ToolbarGroup" />
+                <CommandFlag>TextOnly</CommandFlag>
+                <Strings>
+                    <ButtonText>...</ButtonText>
+                    <CommandName>Trace Level</CommandName>
+                    <ToolTipText>Show a dialog to change the trace level for the next time debugging starts</ToolTipText>
                 </Strings>
             </Button>
         </Buttons>
+        <Combos>
+            <Combo guid="guidBindingPaneCmdSet" id="TraceLevelDropDownId" priority="0x0101" type="DropDownCombo" defaultWidth="90" idCommandList="TraceLevelDropDownListId">
+                <Parent guid="guidBindingPaneCmdSet" id="ToolbarGroup" />
+                <CommandFlag>IconAndText</CommandFlag>
+                <Strings>
+                    <ButtonText>Trace level: </ButtonText>
+                    <CommandName>Trace Level</CommandName>
+                    <ToolTipText>Change the binding trace level for the next time debugging starts</ToolTipText>
+                </Strings>
+            </Combo>
+        </Combos>
         <Bitmaps>
-            <Bitmap guid="guidImages" href="Resources\ToolWindowCommand.png" usedList="bmpCommandIcon"/>
+            <Bitmap guid="guidImages" href="Resources\ToolWindowCommand.png" usedList="BindingPaneCommandIcon"/>
         </Bitmaps>
     </Commands>
 
     <Symbols>
         <GuidSymbol name="guidPackage" value="{08f93eba-7555-4ccb-9cea-82925fcbe8ff}" />
         <GuidSymbol name="guidPackageCmdSet" value="{418ab65f-8c3a-470a-8bef-7dfa5f82364a}">
-            <IDSymbol name="ToolWindowCommandId" value="0x0100" />
+            <IDSymbol name="BindingPaneCommandId" value="0x0100" />
+        </GuidSymbol>
+        <GuidSymbol name="guidBindingPaneCmdSet" value="{86940b37-818d-4b50-86e6-87a7c3ea77b9}">
+            <IDSymbol name="Toolbar" value="0x1000" />
+            <IDSymbol name="ToolbarGroup" value="0x1050" />
+            <IDSymbol name="ClearCommandId" value="0x0100" />
+            <IDSymbol name="TraceLevelDropDownId" value="0x0101" />
+            <IDSymbol name="TraceLevelDropDownListId" value="0x0102" />
+            <IDSymbol name="TraceLevelOptionsId" value="0x0103" />
         </GuidSymbol>
         <GuidSymbol name="guidImages" value="{2e47d056-94f1-4c81-920f-42b390524fe5}" >
-            <IDSymbol name="bmpCommandIcon" value="1" />
+            <IDSymbol name="BindingPaneCommandIcon" value="1" />
         </GuidSymbol>
         <GuidSymbol name="guidVSDebugGroup" value="{c9dd4a58-47fb-11d2-83e7-00c04f9902c1}">
             <IDSymbol name="IDG_DEBUG_WINDOWS_GENERAL" value="0x0002"/>
+        </GuidSymbol>
+        <GuidSymbol name="guidImageCatalog" value="{ae27a6b0-e345-4288-96df-5eaf394ee369}">
+            <IDSymbol name="ClearWindowContent" value="482" />
         </GuidSymbol>
     </Symbols>
 </CommandTable>

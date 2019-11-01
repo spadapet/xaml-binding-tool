@@ -1,63 +1,58 @@
-﻿using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
+﻿using Microsoft.Internal.VisualStudio.Shell.TableControl;
+using Microsoft.VisualStudio.Shell.TableControl;
+using Microsoft.VisualStudio.Shell.TableManager;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
+using XamlBinding.ToolWindow.Table;
 
 namespace XamlBinding.ToolWindow
 {
-    internal partial class BindingPaneControl : UserControl
+    internal partial class BindingPaneControl : UserControl, IDisposable
     {
         public BindingPaneViewModel ViewModel { get; }
+        private readonly ITableManager tableManager;
+        private readonly IWpfTableControlProvider tableControlProvider;
+        private TableDataSource tableDataSource;
+        private IWpfTableControl4 tableControl;
 
-        public BindingPaneControl(BindingPaneViewModel viewModel)
+        public BindingPaneControl(BindingPaneViewModel viewModel, ITableManager tableManager, IWpfTableControlProvider tableControlProvider)
         {
             this.ViewModel = viewModel;
+            this.tableManager = tableManager;
+            this.tableControlProvider = tableControlProvider;
+            this.tableDataSource = new TableDataSource(this.ViewModel.Entries);
+            this.tableManager.AddSource(this.tableDataSource, TableColumn.AllColumnNames.ToArray());
+
             this.InitializeComponent();
+
+            this.tableControl = (IWpfTableControl4)this.tableControlProvider.CreateControl(this.tableManager, true,
+                TableColumn.AllColumnNames.Select(n => new ColumnState2(n, true, 0)),
+                TableColumn.AllColumnNames.ToArray());
+
+            this.tableHolder.Child = this.tableControl.Control;
         }
 
-        private void OnListViewKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs args)
+        public void Dispose()
         {
-            this.ViewModel.Telemetry.TrackEvent(Constants.EventListViewFocusChanged, new Dictionary<string, object>()
+            this.tableHolder.Child = null;
+
+            this.tableControl.Dispose();
+            this.tableControl = null;
+
+            this.tableManager.RemoveSource(this.tableDataSource);
+            this.tableDataSource.Dispose();
+            this.tableDataSource = null;
+        }
+
+        private void OnKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            this.ViewModel.Telemetry.TrackEvent(Constants.EventFocusChanged, new Dictionary<string, object>()
             {
-                { Constants.PropertyFocused, this.listView.IsKeyboardFocusWithin },
+                { Constants.PropertyFocused, this.IsKeyboardFocusWithin },
             });
-        }
-
-        private void OnClickHyperlink(object sender, RequestNavigateEventArgs args)
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            try
-            {
-                string uriString = args.Uri.ToString();
-
-                if (uriString == @"tools://options/debug/output")
-                {
-                    Guid cmdGroup = Constants.GuidCommandSet97;
-                    object debugOutputPageId = Constants.ToolsOptionsDebugOutputPageString;
-                    const int cmdidToolsOptions = Constants.ToolsOptionsCommandId;
-
-                    if (ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShell)) is IVsUIShell shell)
-                    {
-                        shell.PostExecCommand(ref cmdGroup, cmdidToolsOptions, 0, ref debugOutputPageId);
-                    }
-                }
-                else
-                {
-                    Process.Start(new ProcessStartInfo(uriString)
-                    {
-                        UseShellExecute = true
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                this.ViewModel.Telemetry.TrackException(ex);
-            }
         }
     }
 }

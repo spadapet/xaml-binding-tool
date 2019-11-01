@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Input;
-using XamlBinding.Resources;
 using XamlBinding.Utility;
 
 namespace XamlBinding.ToolWindow
@@ -18,14 +15,12 @@ namespace XamlBinding.ToolWindow
     internal class BindingPaneViewModel : ObservableObject
     {
         public Telemetry Telemetry { get; }
-        public IReadOnlyList<BindingEntry> Entries => this.entryList;
-        public ICommand ClearCommand => this.clearCommand;
-        public const string DefaultTraceLevel = "Error";
+        public BindingPaneController Controller { get; }
+        public ObservableCollection<BindingEntry> Entries { get; }
+        public bool CanClearEntries => this.entrySet.Count > 0;
 
         private readonly StringCache stringCache;
         private readonly HashSet<BindingEntry> entrySet;
-        private readonly ObservableCollection<BindingEntry> entryList;
-        private readonly DelegateCommand clearCommand;
         private string traceLevel;
         private bool isDebugging;
 
@@ -38,20 +33,21 @@ namespace XamlBinding.ToolWindow
         public BindingPaneViewModel(Telemetry telemetry, StringCache stringCache)
         {
             this.Telemetry = telemetry;
+            this.Controller = new BindingPaneController(this);
+
             this.stringCache = stringCache;
             this.entrySet = new HashSet<BindingEntry>();
-            this.entryList = new ObservableCollection<BindingEntry>();
-            this.entryList.CollectionChanged += this.OnEntryCollectionChanged;
-            this.clearCommand = new DelegateCommand(this.UserClearEntries, this.CanClearEntries);
-            this.traceLevel = BindingPaneViewModel.DefaultTraceLevel;
+            this.Entries = new ObservableCollection<BindingEntry>();
+            this.Entries.CollectionChanged += this.OnEntryCollectionChanged;
+            this.traceLevel = nameof(BindingTraceLevels.Error);
 
             if (Constants.IsXamlDesigner)
             {
-                this.entryList.Add(new BindingEntry(BindingErrorCodes.PathError, Match.Empty, stringCache));
-                this.entryList.Add(new BindingEntry(BindingErrorCodes.PathError, Match.Empty, stringCache));
-                this.entryList.Add(new BindingEntry(BindingErrorCodes.PathError, Match.Empty, stringCache));
-                this.entryList.Add(new BindingEntry(BindingErrorCodes.Unknown, Match.Empty, stringCache));
-                this.entryList.Add(new BindingEntry(BindingErrorCodes.Unknown, Match.Empty, stringCache));
+                this.Entries.Add(new BindingEntry(BindingCodes.PathError, Match.Empty, stringCache));
+                this.Entries.Add(new BindingEntry(BindingCodes.PathError, Match.Empty, stringCache));
+                this.Entries.Add(new BindingEntry(BindingCodes.PathError, Match.Empty, stringCache));
+                this.Entries.Add(new BindingEntry(BindingCodes.Unknown, Match.Empty, stringCache));
+                this.Entries.Add(new BindingEntry(BindingCodes.Unknown, Match.Empty, stringCache));
             }
         }
 
@@ -59,7 +55,7 @@ namespace XamlBinding.ToolWindow
         {
             if (this.entrySet.Count < 2)
             {
-                this.clearCommand.RaiseCanExecuteChanged();
+                this.NotifyPropertyChanged(nameof(this.CanClearEntries));
             }
         }
 
@@ -75,19 +71,8 @@ namespace XamlBinding.ToolWindow
         public void ClearEntries()
         {
             this.entrySet.Clear();
-            this.entryList.Clear();
+            this.Entries.Clear();
             this.stringCache.Clear();
-        }
-
-        private void UserClearEntries()
-        {
-            this.Telemetry.TrackEvent(Constants.EventClearPane, this.GetEntryTelemetryProperties());
-            this.ClearEntries();
-        }
-
-        private bool CanClearEntries()
-        {
-            return this.entrySet.Count > 0;
         }
 
         public void AddEntry(BindingEntry entry)
@@ -99,7 +84,7 @@ namespace XamlBinding.ToolWindow
             else
             {
                 this.entrySet.Add(entry);
-                this.entryList.Add(entry);
+                this.Entries.Add(entry);
             }
         }
 
@@ -114,17 +99,8 @@ namespace XamlBinding.ToolWindow
         public string TraceLevel
         {
             get => this.traceLevel;
-
-            set
-            {
-                if (this.SetProperty(ref this.traceLevel, value ?? BindingPaneViewModel.DefaultTraceLevel))
-                {
-                    this.NotifyPropertyChanged(nameof(this.TraceLevelText));
-                }
-            }
+            set => this.SetProperty(ref this.traceLevel, value ?? nameof(BindingTraceLevels.Error));
         }
-
-        public string TraceLevelText => string.Format(CultureInfo.CurrentCulture, Resource.ToolWindow_TraceLevel, this.TraceLevel);
 
         public bool IsDebugging
         {

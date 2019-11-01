@@ -1,18 +1,21 @@
 ﻿using System.Collections.Concurrent;
+using System.Globalization;
 
 namespace XamlBinding.Utility
 {
     /// <summary>
-    /// Binding error columns are going to contain a lot of duplicate strings.
+    /// Binding failure columns are going to contain a lot of duplicate strings.
     /// This class makes sure only one copy of each string stays in memory
     /// </summary>
     internal class StringCache
     {
-        private readonly ConcurrentDictionary<string, string> cache;
+        private readonly ConcurrentDictionary<string, string> stringCache;
+        private readonly ConcurrentDictionary<int, string> intCache;
 
         public StringCache()
         {
-            this.cache = new ConcurrentDictionary<string, string>();
+            this.stringCache = new ConcurrentDictionary<string, string>();
+            this.intCache = new ConcurrentDictionary<int, string>();
         }
 
         public string Get(string value, bool trim = true)
@@ -32,12 +35,18 @@ namespace XamlBinding.Utility
                 return string.Empty;
             }
 
-            return this.cache.GetOrAdd(value, value);
+            return this.stringCache.GetOrAdd(value, value);
+        }
+
+        public string Get(int value)
+        {
+            return this.intCache.GetOrAdd(value, v => v.ToString(CultureInfo.InvariantCulture));
         }
 
         public void Clear()
         {
-            this.cache.Clear();
+            this.stringCache.Clear();
+            this.intCache.Clear();
         }
     }
 }

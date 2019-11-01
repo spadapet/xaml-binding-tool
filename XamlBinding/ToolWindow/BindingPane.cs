@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
@@ -8,6 +7,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Threading;
 using Microsoft.Win32;
 using System;
+using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using System.Threading;
 using XamlBinding.Package;
@@ -20,17 +20,19 @@ namespace XamlBinding.ToolWindow
     /// <summary>
     /// This hooks up the tool window's user interface with Visual Studio
     /// </summary>
-    [Guid(Constants.BindingToolWindowString)]
+    [Guid(Constants.BindingPaneString)]
     internal class BindingPane
         : ToolWindowPane
         , IVsDebuggerEvents
         , IVsWindowFrameNotify
         , IVsWindowFrameNotify2
     {
-        private readonly Telemetry telemetry;
+        private readonly BindingPackage package;
         private readonly BindingEntryParser bindingParser;
         private readonly BindingPaneViewModel viewModel;
         private readonly CancellationTokenSource cancellationTokenSource;
+
+        private BindingPaneControl control;
         private ITextBuffer debugTextBuffer;
         private ITrackingPoint lastTextPoint;
         private RegistryKey dataBindingOutputLevelKey;
@@ -40,19 +42,20 @@ namespace XamlBinding.ToolWindow
         private uint frameCookie;
         private uint debugCookie;
 
-        private BindingPackage BindingPackage => (BindingPackage)this.Package;
-        private JoinableTaskFactory JoinableTaskFactory => this.BindingPackage.JoinableTaskFactory;
-
-        public BindingPane(Telemetry telemetry)
+        public BindingPane(BindingPackage package)
             : base(null)
         {
             StringCache stringCache = new StringCache();
 
-            this.telemetry = telemetry;
+            this.package = package;
             this.bindingParser = new BindingEntryParser(stringCache);
-            this.viewModel = new BindingPaneViewModel(telemetry, stringCache);
+            this.viewModel = new BindingPaneViewModel(package.Telemetry, stringCache);
             this.cancellationTokenSource = new CancellationTokenSource();
+
             this.Caption = Resource.ToolWindow_Title;
+            this.ToolBar = new CommandID(Constants.GuidBindingPaneCommandSet, Constants.BindingPaneToolbarId);
+            this.ToolBarLocation = (int)VSTWT_LOCATION.VSTWT_TOP;
+            this.ToolBarCommandTarget = this.viewModel.Controller;
         }
 
         /// <summary>
@@ -62,7 +65,7 @@ namespace XamlBinding.ToolWindow
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            this.telemetry.TrackEvent(Constants.EventInitializePane);
+            this.package.Telemetry.TrackEvent(Constants.EventInitializePane);
 
             // Look up the value of WPF trace settings in the registry
             using (RegistryKey rootKey = VSRegistry.RegistryRoot(this, __VsLocalRegistryType.RegType_UserSettings, writable: true))
@@ -139,7 +142,7 @@ namespace XamlBinding.ToolWindow
             {
                 CancellationToken cancelToken = this.cancellationTokenSource.Token;
 
-                this.JoinableTaskFactory.RunAsync(async delegate
+                this.package.JoinableTaskFactory.RunAsync(async delegate
                 {
                     while (!this.AttachToDebugOutput() && this.viewModel.IsDebugging && !cancelToken.IsCancellationRequested)
                     {
@@ -172,12 +175,13 @@ namespace XamlBinding.ToolWindow
         {
             get
             {
-                if (base.Content == null)
+                if (this.control == null)
                 {
-                    base.Content = new BindingPaneControl(this.viewModel);
+                    this.control = new BindingPaneControl(this.viewModel, this.package.TableManager, this.package.TableControlProvider);
+                    base.Content = this.control;
                 }
 
-                return base.Content;
+                return this.control;
             }
         }
 
@@ -190,7 +194,7 @@ namespace XamlBinding.ToolWindow
 
             this.FetchDataBindingTraceLevel();
 
-            this.JoinableTaskFactory.RunAsync(async delegate
+            this.package.JoinableTaskFactory.RunAsync(async delegate
             {
                 if (this.dataBindingOutputLevelKey != null)
                 {
@@ -232,12 +236,12 @@ namespace XamlBinding.ToolWindow
             {
                 IVsOutputWindow outputWindow = this.GetService<SVsOutputWindow, IVsOutputWindow>();
                 Guid debugPaneId = VSConstants.GUID_OutWindowDebugPane;
-                Guid viewId = DefGuidList.guidIWpfTextViewHost;
+                Guid viewId = Microsoft.VisualStudio.Editor.DefGuidList.guidIWpfTextViewHost;
 
                 if (ErrorHandler.Succeeded(outputWindow.GetPane(ref debugPaneId, out IVsOutputWindowPane pane)) && pane is IVsUserData userData &&
                     ErrorHandler.Succeeded(userData.GetData(ref viewId, out object viewHostObject)) && viewHostObject is IWpfTextViewHost viewHost)
                 {
-                    this.telemetry.TrackEvent(Constants.EventDebugOutputConnected);
+                    this.package.Telemetry.TrackEvent(Constants.EventDebugOutputConnected);
 
                     this.debugTextBuffer = viewHost.TextView.TextBuffer;
                     this.debugTextBuffer.Changed += this.OnTextBufferChanged;
@@ -271,7 +275,7 @@ namespace XamlBinding.ToolWindow
                 ITrackingPoint endPoint = snapshot.CreateTrackingPoint(snapshot.Length, PointTrackingMode.Negative);
                 this.lastTextPoint = endPoint;
 
-                this.JoinableTaskFactory.RunAsync(async delegate
+                this.package.JoinableTaskFactory.RunAsync(async delegate
                 {
                     await Task.Run(() => this.ProcessOutput(snapshot, startPoint, endPoint));
                 }).FileAndForget(Constants.VsBindingPaneFeaturePrefix + nameof(this.BeginProcessOutput));
@@ -287,13 +291,31 @@ namespace XamlBinding.ToolWindow
 
             if (entries.Length > 0)
             {
-                this.JoinableTaskFactory.RunAsync(async delegate
+                this.package.JoinableTaskFactory.RunAsync(async delegate
                 {
-                    await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    await this.package.JoinableTaskFactory.SwitchToMainThreadAsync();
                     this.viewModel.AddEntries(entries);
                 }).FileAndForget(Constants.VsBindingPaneFeaturePrefix + nameof(this.ProcessOutput));
             }
         }
+
+#if SEARCH_ENABLED
+        public override bool SearchEnabled => true;
+
+        public override void ClearSearch()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            base.ClearSearch();
+        }
+
+        public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            return new SearchTask(dwCookie, pSearchQuery, pSearchCallback);
+        }
+#endif
 
         int IVsWindowFrameNotify.OnShow(int fShow)
         {
@@ -305,12 +327,12 @@ namespace XamlBinding.ToolWindow
                 {
                     case __FRAMESHOW.FRAMESHOW_WinShown:
                         this.lastFrameShow = frameShow;
-                        this.telemetry.TrackEvent(Constants.EventShowPane, this.viewModel.GetEntryTelemetryProperties());
+                        this.package.Telemetry.TrackEvent(Constants.EventShowPane, this.viewModel.GetEntryTelemetryProperties());
                         break;
 
                     case __FRAMESHOW.FRAMESHOW_WinHidden:
                         this.lastFrameShow = frameShow;
-                        this.telemetry.TrackEvent(Constants.EventHidePane, this.viewModel.GetEntryTelemetryProperties());
+                        this.package.Telemetry.TrackEvent(Constants.EventHidePane, this.viewModel.GetEntryTelemetryProperties());
                         break;
                 }
             }
@@ -324,7 +346,7 @@ namespace XamlBinding.ToolWindow
 
         int IVsWindowFrameNotify2.OnClose(ref uint pgrfSaveOptions)
         {
-            this.telemetry.TrackEvent(Constants.EventClosePane, this.viewModel.GetEntryTelemetryProperties());
+            this.package.Telemetry.TrackEvent(Constants.EventClosePane, this.viewModel.GetEntryTelemetryProperties());
             return Constants.S_OK;
         }
 
@@ -334,7 +356,7 @@ namespace XamlBinding.ToolWindow
 
             if (dbgmodeNew.HasFlag(DBGMODE.DBGMODE_Run))
             {
-                this.telemetry.TrackEvent(Constants.EventDebugStart, this.viewModel.GetEntryTelemetryProperties());
+                this.package.Telemetry.TrackEvent(Constants.EventDebugStart, this.viewModel.GetEntryTelemetryProperties());
 
                 this.viewModel.IsDebugging = true;
                 this.viewModel.ClearEntries();
@@ -347,7 +369,7 @@ namespace XamlBinding.ToolWindow
             }
             else
             {
-                this.telemetry.TrackEvent(Constants.EventDebugEnd, this.viewModel.GetEntryTelemetryProperties());
+                this.package.Telemetry.TrackEvent(Constants.EventDebugEnd, this.viewModel.GetEntryTelemetryProperties());
                 this.viewModel.IsDebugging = false;
             }
 

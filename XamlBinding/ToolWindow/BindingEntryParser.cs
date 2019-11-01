@@ -46,7 +46,7 @@ namespace XamlBinding.ToolWindow
                 {
                     switch (errorCode)
                     {
-                        case BindingErrorCodes.PathError:
+                        case BindingCodes.PathError:
                             entry = this.ProcessPathError(match);
                             break;
 
@@ -76,7 +76,7 @@ namespace XamlBinding.ToolWindow
                 return null;
             }
 
-            return new BindingEntry(BindingErrorCodes.PathError, textMatch, this.stringCache);
+            return new BindingEntry(BindingCodes.PathError, textMatch, this.stringCache);
         }
 
         private BindingEntry ProcessUnknownError(int errorCode, Match match)

@@ -1,19 +1,25 @@
-﻿using Microsoft.VisualStudio.PlatformUI;
+﻿using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell.TableControl;
+using Microsoft.VisualStudio.Shell.TableManager;
 using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows;
 using XamlBinding.Resources;
+using XamlBinding.ToolWindow.Table;
 using XamlBinding.Utility;
 
 namespace XamlBinding.ToolWindow
 {
     /// <summary>
-    /// One entry in the error list
+    /// One entry in the failure list
     /// </summary>
-    internal class BindingEntry : ObservableObject, IEquatable<BindingEntry>
+    internal class BindingEntry : ObservableObject, IEquatable<BindingEntry>, IWpfTableEntry
     {
-        public int ErrorCode { get; }
+        public int Code { get; }
         public int Count { get; private set; }
         public string Description { get; }
         public string SourceProperty { get; }
@@ -30,10 +36,12 @@ namespace XamlBinding.ToolWindow
         private readonly StringCache stringCache;
         private int hashCode;
 
-        public BindingEntry(int errorCode, Match match, StringCache stringCache)
+        object ITableEntry.Identity => this;
+
+        public BindingEntry(int code, Match match, StringCache stringCache)
         {
             this.stringCache = stringCache;
-            this.ErrorCode = errorCode;
+            this.Code = code;
             this.Count = 1;
 
             if (Constants.IsXamlDesigner)
@@ -66,10 +74,10 @@ namespace XamlBinding.ToolWindow
             }
         }
 
-        public BindingEntry(int errorCode, string description, StringCache stringCache)
+        public BindingEntry(int code, string description, StringCache stringCache)
         {
             this.stringCache = stringCache;
-            this.ErrorCode = errorCode;
+            this.Code = code;
             this.Count = 1;
 
             this.Description = stringCache.Get(description);
@@ -85,25 +93,15 @@ namespace XamlBinding.ToolWindow
             this.TargetPropertyType = string.Empty;
         }
 
-        public string SourceText => !string.IsNullOrEmpty(this.SourceProperty)
-            ? this.stringCache.Get(string.Format(CultureInfo.CurrentCulture, Resource.SourceText, this.SourceProperty, this.SourcePropertyType))
-            : string.Empty;
-
-        public string TargetText => !string.IsNullOrEmpty(this.TargetProperty)
-            ? this.stringCache.Get(string.Format(CultureInfo.CurrentCulture, Resource.TargetText, this.TargetElementType, this.TargetProperty, this.TargetPropertyType))
-            : string.Empty;
-
-        public string EntryTypeText => this.stringCache.Get("BIND" + this.ErrorCode.ToString("0000", CultureInfo.InvariantCulture));
-
         public string DescriptionText
         {
             get
             {
                 string text;
 
-                switch (this.ErrorCode)
+                switch (this.Code)
                 {
-                    case BindingErrorCodes.PathError:
+                    case BindingCodes.PathError:
                         text = string.Format(CultureInfo.CurrentCulture, Resource.Description_PathError, this.SourceProperty, this.SourcePropertyType);
                         break;
 
@@ -138,7 +136,7 @@ namespace XamlBinding.ToolWindow
                 sb.AppendLine(this.TargetProperty);
                 sb.AppendLine(this.TargetPropertyType);
 
-                this.hashCode = this.ErrorCode.GetHashCode() ^ sb.ToString().GetHashCode();
+                this.hashCode = this.Code.GetHashCode() ^ sb.ToString().GetHashCode();
             }
 
             return this.hashCode;
@@ -151,7 +149,7 @@ namespace XamlBinding.ToolWindow
 
         public bool Equals(BindingEntry other)
         {
-            return this.ErrorCode == other.ErrorCode &&
+            return this.Code == other.Code &&
                 this.SourceProperty == other.SourceProperty &&
                 this.SourcePropertyType == other.SourcePropertyType &&
                 this.SourcePropertyName == other.SourcePropertyName &&
@@ -162,6 +160,109 @@ namespace XamlBinding.ToolWindow
                 this.TargetElementName == other.TargetElementName &&
                 this.TargetProperty == other.TargetProperty &&
                 this.TargetPropertyType == other.TargetPropertyType;
+        }
+
+        bool ITableEntry.TryGetValue(string keyName, out object content)
+        {
+            switch (keyName)
+            {
+                case StandardTableKeyNames.ErrorSeverityImage:
+                    content = KnownMonikers.StatusError;
+                    break;
+
+                case TableColumn.ColumnBindingPath:
+                    content = this.BindingPath;
+                    break;
+
+                case TableColumn.ColumnCode:
+                    content = this.stringCache.Get(this.Code);
+                    break;
+
+                case TableColumn.ColumnCount:
+                    content = this.stringCache.Get(this.Count);
+                    break;
+
+                case TableColumn.ColumnDataContextType:
+                    content = this.DataItemType;
+                    break;
+
+                case TableColumn.ColumnDescription:
+                    content = this.DescriptionText;
+                    break;
+
+                case TableColumn.ColumnTarget:
+                    content = !string.IsNullOrEmpty(this.TargetProperty)
+                        ? this.stringCache.Get(string.Format(CultureInfo.CurrentCulture, Resource.TargetText, this.TargetElementType, this.TargetProperty, this.TargetPropertyType))
+                        : string.Empty;
+                    break;
+
+                default:
+                    content = string.Empty;
+                    break;
+            }
+
+            return true;
+        }
+
+        bool ITableEntry.TrySetValue(string keyName, object content)
+        {
+            return false;
+        }
+
+        bool ITableEntry.CanSetValue(string keyName)
+        {
+            return false;
+        }
+
+        bool IWpfTableEntry.TryCreateImageContent(string columnName, bool singleColumnView, out ImageMoniker content)
+        {
+            switch (columnName)
+            {
+                case StandardTableColumnDefinitions.ErrorSeverity:
+                    content = KnownMonikers.StatusError;
+                    break;
+
+                default:
+                    content = default;
+                    return false;
+            }
+
+            return true;
+        }
+
+        bool IWpfTableEntry.TryCreateStringContent(string columnName, bool truncatedText, bool singleColumnView, out string content)
+        {
+            content = null;
+            return false;
+        }
+
+        bool IWpfTableEntry.TryCreateColumnContent(string columnName, bool singleColumnView, out FrameworkElement content)
+        {
+            content = null;
+            return false;
+        }
+
+        bool IWpfTableEntry.CanCreateDetailsContent()
+        {
+            return false;
+        }
+
+        bool IWpfTableEntry.TryCreateDetailsContent(out FrameworkElement expandedContent)
+        {
+            expandedContent = null;
+            return false;
+        }
+
+        bool IWpfTableEntry.TryCreateDetailsStringContent(out string content)
+        {
+            content = null;
+            return false;
+        }
+
+        bool IWpfTableEntry.TryCreateToolTip(string columnName, out object toolTip)
+        {
+            toolTip = null;
+            return false;
         }
     }
 }

@@ -79,6 +79,15 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Code.
+        /// </summary>
+        public static string Header_Code {
+            get {
+                return ResourceManager.GetString("Header.Code", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Count.
         /// </summary>
         public static string Header_Count {
@@ -102,15 +111,6 @@ namespace XamlBinding.Resources {
         public static string Header_Description {
             get {
                 return ResourceManager.GetString("Header.Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error.
-        /// </summary>
-        public static string Header_Error {
-            get {
-                return ResourceManager.GetString("Header.Error", resourceCulture);
             }
         }
         
@@ -142,16 +142,7 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Clear.
-        /// </summary>
-        public static string Toolbar_Clear {
-            get {
-                return ResourceManager.GetString("Toolbar.Clear", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to XAML Binding Errors.
+        ///   Looks up a localized string similar to XAML Binding Failures.
         /// </summary>
         public static string ToolWindow_Title {
             get {
@@ -160,7 +151,7 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to XAML Binding Errors (loading).
+        ///   Looks up a localized string similar to XAML Binding Failures (loading).
         /// </summary>
         public static string ToolWindow_TitleLoading {
             get {
@@ -169,11 +160,11 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Trace level: {0}.
+        ///   Looks up a localized string similar to Off,Critical,Error,Warning,Information,Verbose,Activity,All.
         /// </summary>
-        public static string ToolWindow_TraceLevel {
+        public static string TraceLevels {
             get {
-                return ResourceManager.GetString("ToolWindow.TraceLevel", resourceCulture);
+                return ResourceManager.GetString("TraceLevels", resourceCulture);
             }
         }
     }

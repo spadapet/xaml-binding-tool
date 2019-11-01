@@ -53,14 +53,19 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
+    <Compile Include="ToolWindow\BindingTraceLevels.cs" />
     <Compile Include="ToolWindow\BindingEntryParser.cs" />
     <Compile Include="ToolWindow\BindingPane.cs" />
     <Compile Include="ToolWindow\BindingPaneControl.xaml.cs">
       <DependentUpon>BindingPaneControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ToolWindow\BindingPaneController.cs" />
     <Compile Include="ToolWindow\BindingPaneViewModel.cs" />
-    <Compile Include="ToolWindow\BindingErrorCodes.cs" />
+    <Compile Include="ToolWindow\BindingCodes.cs" />
     <Compile Include="ToolWindow\BindingEntry.cs" />
+    <Compile Include="ToolWindow\Table\TableColumn.cs" />
+    <Compile Include="ToolWindow\Table\TableDataSource.cs" />
+    <Compile Include="Utility\DesignTimeResources.cs" />
     <Compile Include="Utility\SolutionOptions.cs" />
     <Compile Include="Utility\StringCache.cs" />
     <Compile Include="Utility\Telemetry.cs" />
@@ -117,6 +122,7 @@
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
