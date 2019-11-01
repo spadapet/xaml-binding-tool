@@ -61,12 +61,6 @@
     <Compile Include="ToolWindow\BindingPaneViewModel.cs" />
     <Compile Include="ToolWindow\BindingErrorCodes.cs" />
     <Compile Include="ToolWindow\BindingEntry.cs" />
-    <Compile Include="Package\DebugOutputTextViewCreationListener.cs" />
-    <Compile Include="Utility\BoolToVisibleConverter.cs" />
-    <Compile Include="Utility\BoolToNegativeConverter.cs" />
-    <Compile Include="Utility\DelegateCommand.cs" />
-    <Compile Include="Utility\DelegateConverter.cs" />
-    <Compile Include="Utility\PropertyNotifier.cs" />
     <Compile Include="Utility\SolutionOptions.cs" />
     <Compile Include="Utility\StringCache.cs" />
     <Compile Include="Utility\Telemetry.cs" />

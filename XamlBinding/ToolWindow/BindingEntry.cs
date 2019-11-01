@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.PlatformUI;
+using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,7 +11,7 @@ namespace XamlBinding.ToolWindow
     /// <summary>
     /// One entry in the error list
     /// </summary>
-    internal class BindingEntry : PropertyNotifier, IEquatable<BindingEntry>
+    internal class BindingEntry : ObservableObject, IEquatable<BindingEntry>
     {
         public int ErrorCode { get; }
         public int Count { get; private set; }
@@ -118,7 +119,7 @@ namespace XamlBinding.ToolWindow
         public void AddCount(int count = 1)
         {
             this.Count += count;
-            this.OnPropertyChanged(nameof(this.Count));
+            this.NotifyPropertyChanged(nameof(this.Count));
         }
 
         public override int GetHashCode()

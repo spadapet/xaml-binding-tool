@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.PlatformUI;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -14,7 +15,7 @@ namespace XamlBinding.ToolWindow
     /// <summary>
     /// Keeps the state of the tool window
     /// </summary>
-    internal class BindingPaneViewModel : PropertyNotifier
+    internal class BindingPaneViewModel : ObservableObject
     {
         public Telemetry Telemetry { get; }
         public IReadOnlyList<BindingEntry> Entries => this.entryList;
@@ -58,7 +59,7 @@ namespace XamlBinding.ToolWindow
         {
             if (this.entrySet.Count < 2)
             {
-                this.clearCommand.UpdateCanExecute();
+                this.clearCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -116,9 +117,9 @@ namespace XamlBinding.ToolWindow
 
             set
             {
-                if (this.SetPropertyValue(ref this.traceLevel, value ?? BindingPaneViewModel.DefaultTraceLevel))
+                if (this.SetProperty(ref this.traceLevel, value ?? BindingPaneViewModel.DefaultTraceLevel))
                 {
-                    this.OnPropertyChanged(nameof(this.TraceLevelText));
+                    this.NotifyPropertyChanged(nameof(this.TraceLevelText));
                 }
             }
         }
@@ -128,7 +129,7 @@ namespace XamlBinding.ToolWindow
         public bool IsDebugging
         {
             get => this.isDebugging;
-            set => this.SetPropertyValue(ref this.isDebugging, value);
+            set => this.SetProperty(ref this.isDebugging, value);
         }
     }
 }

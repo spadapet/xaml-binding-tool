@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.ComponentModel.Design;
 using System.IO;
@@ -52,14 +51,6 @@ namespace XamlBinding.Package
             }
 
             base.Dispose(disposing);
-        }
-
-        public delegate void DebugOutputTextViewCreatedFunc(ITextView textView);
-        public event DebugOutputTextViewCreatedFunc DebugOutputTextViewCreated;
-
-        public void OnDebugOutputTextViewCreated(ITextView textView)
-        {
-            this.DebugOutputTextViewCreated?.Invoke(textView);
         }
 
         public override IVsAsyncToolWindowFactory GetAsyncToolWindowFactory(Guid toolWindowType)
@@ -120,7 +111,7 @@ namespace XamlBinding.Package
             this.JoinableTaskFactory.RunAsync(async delegate
             {
                 await this.ShowToolWindowAsync(typeof(BindingPane), 0, true, this.DisposalToken);
-            });
+            }).FileAndForget(Constants.VsBindingPaneFeaturePrefix + nameof(this.ShowBindingPane));
         }
     }
 }

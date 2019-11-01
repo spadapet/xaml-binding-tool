@@ -1,6 +1,4 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio;
+﻿using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -12,9 +10,8 @@ using Microsoft.Win32;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Automation;
 using XamlBinding.Package;
+using XamlBinding.Resources;
 using XamlBinding.Utility;
 using Task = System.Threading.Tasks.Task;
 
@@ -26,26 +23,25 @@ namespace XamlBinding.ToolWindow
     [Guid(Constants.BindingToolWindowString)]
     internal class BindingPane
         : ToolWindowPane
+        , IVsDebuggerEvents
         , IVsWindowFrameNotify
         , IVsWindowFrameNotify2
-        , IVsDebuggerEvents
     {
         private readonly Telemetry telemetry;
+        private readonly BindingEntryParser bindingParser;
+        private readonly BindingPaneViewModel viewModel;
+        private readonly CancellationTokenSource cancellationTokenSource;
         private ITextBuffer debugTextBuffer;
         private ITrackingPoint lastTextPoint;
         private RegistryKey dataBindingOutputLevelKey;
+        private __FRAMESHOW lastFrameShow;
         private IVsWindowFrame2 frameForCookie;
         private IVsDebugger debuggerForCookie;
         private uint frameCookie;
         private uint debugCookie;
-        private __FRAMESHOW lastFrameShow;
-        private readonly BindingEntryParser bindingParser;
-        private readonly BindingPaneViewModel viewModel;
-        private readonly CancellationTokenSource cancellationTokenSource;
 
         private BindingPackage BindingPackage => (BindingPackage)this.Package;
         private JoinableTaskFactory JoinableTaskFactory => this.BindingPackage.JoinableTaskFactory;
-        private const string DataBindingTraceKey = @"Debugger\Tracing\WPF.DataBinding";
 
         public BindingPane(Telemetry telemetry)
             : base(null)
@@ -56,11 +52,7 @@ namespace XamlBinding.ToolWindow
             this.bindingParser = new BindingEntryParser(stringCache);
             this.viewModel = new BindingPaneViewModel(telemetry, stringCache);
             this.cancellationTokenSource = new CancellationTokenSource();
-
-            // Create the WPF user interface
-            BindingPaneControl control = new BindingPaneControl(this.viewModel);
-            this.Caption = AutomationProperties.GetName(control);
-            this.Content = control;
+            this.Caption = Resource.ToolWindow_Title;
         }
 
         /// <summary>
@@ -69,57 +61,25 @@ namespace XamlBinding.ToolWindow
         protected override void Initialize()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            this.telemetry.TrackEvent(Constants.EventInitializePane);
 
-            this.BindingPackage.DebugOutputTextViewCreated += this.OnTextViewCreated;
+            this.telemetry.TrackEvent(Constants.EventInitializePane);
 
             // Look up the value of WPF trace settings in the registry
             using (RegistryKey rootKey = VSRegistry.RegistryRoot(this, __VsLocalRegistryType.RegType_UserSettings, writable: true))
             {
-                this.dataBindingOutputLevelKey = rootKey.CreateSubKey(BindingPane.DataBindingTraceKey, writable: true);
+                this.dataBindingOutputLevelKey = rootKey.CreateSubKey(Constants.DataBindingTraceKey, writable: true);
             }
 
-            // Need to know when debugging starts/stops
-            if (this.GetService(typeof(IVsDebugger)) is IVsDebugger debugger)
-            {
-                this.debuggerForCookie = debugger;
-                this.debuggerForCookie.AdviseDebuggerEvents(this, out this.debugCookie);
-
-                DBGMODE[] dbgMode = new DBGMODE[1];
-                if (ErrorHandler.Succeeded(debugger.GetMode(dbgMode)))
-                {
-                    this.viewModel.IsDebugging = dbgMode[0].HasFlag(DBGMODE.DBGMODE_Run) || dbgMode[0].HasFlag(DBGMODE.DBGMODE_Break);
-                }
-            }
-
-            this.AttachToDebugOutput();
-            this.FetchDataBindingTraceSetting();
-            this.HookDataBindingTraceSettingChange();
+            this.HookDataBindingTraceLevel();
+            this.HookDebugEvents();
+            this.WaitForDebugOutputTextBuffer();
 
             base.Initialize();
-        }
-
-        /// <summary>
-        /// Called after this.Frame gets set
-        /// </summary>
-        public override void OnToolWindowCreated()
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            if (this.Frame is IVsWindowFrame2 frame)
-            {
-                this.frameForCookie = frame;
-                this.frameForCookie.Advise(this, out this.frameCookie);
-            }
-
-            base.OnToolWindowCreated();
         }
 
         protected override void Dispose(bool disposing)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-
-            this.BindingPackage.DebugOutputTextViewCreated -= this.OnTextViewCreated;
 
             if (this.debugCookie != 0)
             {
@@ -140,44 +100,118 @@ namespace XamlBinding.ToolWindow
                 this.debugTextBuffer.Changed -= this.OnTextBufferChanged;
             }
 
-            this.dataBindingOutputLevelKey.Dispose();
-
             this.cancellationTokenSource.Cancel();
             this.cancellationTokenSource.Dispose();
+            this.dataBindingOutputLevelKey.Dispose();
 
             base.Dispose(disposing);
         }
 
-        private void HookDataBindingTraceSettingChange()
+        /// <summary>
+        /// Need to know when debugging starts/stops
+        /// </summary>
+        private void HookDebugEvents()
         {
-            CancellationToken cancelToken = this.cancellationTokenSource.Token;
+            ThreadHelper.ThrowIfNotOnUIThread();
 
-            try
+            if (this.GetService(typeof(IVsDebugger)) is IVsDebugger debugger)
             {
-                this.JoinableTaskFactory.RunAsync(async delegate
+                this.debuggerForCookie = debugger;
+                this.debuggerForCookie.AdviseDebuggerEvents(this, out this.debugCookie);
+
+                DBGMODE[] dbgMode = new DBGMODE[1];
+                if (ErrorHandler.Succeeded(debugger.GetMode(dbgMode)))
                 {
-                    if (this.dataBindingOutputLevelKey != null)
-                    {
-                        while (!cancelToken.IsCancellationRequested)
-                        {
-                            await this.dataBindingOutputLevelKey.WaitForChangeAsync(cancellationToken: cancelToken);
-                            this.FetchDataBindingTraceSetting();
-                        }
-                    }
-                });
-            }
-            catch (Exception ex) when (!(ex is TaskCanceledException))
-            {
-                this.telemetry.TrackException(ex);
+                    this.viewModel.IsDebugging = dbgMode[0].HasFlag(DBGMODE.DBGMODE_Run) || dbgMode[0].HasFlag(DBGMODE.DBGMODE_Break);
+                }
             }
         }
 
-        private void FetchDataBindingTraceSetting()
+        /// <summary>
+        /// The debug output text buffer may not be created yet, it will get created as needed while debugging.
+        /// So, while debugging, this method will loop and keep checking until the text buffer is created.
+        /// </summary>
+        private void WaitForDebugOutputTextBuffer()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (!this.AttachToDebugOutput())
+            {
+                CancellationToken cancelToken = this.cancellationTokenSource.Token;
+
+                this.JoinableTaskFactory.RunAsync(async delegate
+                {
+                    while (!this.AttachToDebugOutput() && this.viewModel.IsDebugging && !cancelToken.IsCancellationRequested)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(1.0), cancelToken);
+                    }
+                }).FileAndForget(Constants.VsBindingPaneFeaturePrefix + nameof(this.WaitForDebugOutputTextBuffer));
+            }
+        }
+
+        /// <summary>
+        /// Called after this.Frame gets set
+        /// </summary>
+        public override void OnToolWindowCreated()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (this.Frame is IVsWindowFrame2 frame)
+            {
+                this.frameForCookie = frame;
+                this.frameForCookie.Advise(this, out this.frameCookie);
+            }
+
+            base.OnToolWindowCreated();
+        }
+
+        /// <summary>
+        /// Creates the WPF content
+        /// </summary>
+        public override object Content
+        {
+            get
+            {
+                if (base.Content == null)
+                {
+                    base.Content = new BindingPaneControl(this.viewModel);
+                }
+
+                return base.Content;
+            }
+        }
+
+        /// <summary>
+        /// Wait "forever" for the trace registry value to change and update my cache when it changes
+        /// </summary>
+        private void HookDataBindingTraceLevel()
+        {
+            CancellationToken cancelToken = this.cancellationTokenSource.Token;
+
+            this.FetchDataBindingTraceLevel();
+
+            this.JoinableTaskFactory.RunAsync(async delegate
+            {
+                if (this.dataBindingOutputLevelKey != null)
+                {
+                    while (!cancelToken.IsCancellationRequested)
+                    {
+                        await this.dataBindingOutputLevelKey.WaitForChangeAsync(cancellationToken: cancelToken);
+                        this.FetchDataBindingTraceLevel();
+                    }
+                }
+            }).FileAndForget(Constants.VsBindingPaneFeaturePrefix + nameof(this.HookDataBindingTraceLevel));
+        }
+
+        /// <summary>
+        /// Update my cache of the trace level
+        /// </summary>
+        private void FetchDataBindingTraceLevel()
         {
             string value;
             try
             {
-                value = this.dataBindingOutputLevelKey?.GetValue("Level") as string;
+                value = this.dataBindingOutputLevelKey?.GetValue(Constants.DataBindingTraceLevel) as string;
             }
             catch
             {
@@ -190,7 +224,7 @@ namespace XamlBinding.ToolWindow
         /// <summary>
         /// Get the text buffer in the debug output window (if it exists)
         /// </summary>
-        private void AttachToDebugOutput()
+        private bool AttachToDebugOutput()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -207,17 +241,11 @@ namespace XamlBinding.ToolWindow
 
                     this.debugTextBuffer = viewHost.TextView.TextBuffer;
                     this.debugTextBuffer.Changed += this.OnTextBufferChanged;
-                    this.BeginProcessNewOutput();
+                    this.BeginProcessOutput();
                 }
             }
-        }
 
-        private void OnTextViewCreated(ITextView textView)
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            // Maybe the debug output text view was just created
-            this.AttachToDebugOutput();
+            return this.debugTextBuffer != null;
         }
 
         /// <summary>
@@ -227,10 +255,13 @@ namespace XamlBinding.ToolWindow
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            this.BeginProcessNewOutput();
+            this.BeginProcessOutput();
         }
 
-        private void BeginProcessNewOutput()
+        /// <summary>
+        /// Kicks off a background task to parse the new debug output
+        /// </summary>
+        private void BeginProcessOutput()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -243,7 +274,7 @@ namespace XamlBinding.ToolWindow
                 this.JoinableTaskFactory.RunAsync(async delegate
                 {
                     await Task.Run(() => this.ProcessOutput(snapshot, startPoint, endPoint));
-                });
+                }).FileAndForget(Constants.VsBindingPaneFeaturePrefix + nameof(this.BeginProcessOutput));
             }
         }
 
@@ -260,7 +291,7 @@ namespace XamlBinding.ToolWindow
                 {
                     await this.JoinableTaskFactory.SwitchToMainThreadAsync();
                     this.viewModel.AddEntries(entries);
-                });
+                }).FileAndForget(Constants.VsBindingPaneFeaturePrefix + nameof(this.ProcessOutput));
             }
         }
 
@@ -284,27 +315,31 @@ namespace XamlBinding.ToolWindow
                 }
             }
 
-            return 0;
+            return Constants.S_OK;
         }
 
-        int IVsWindowFrameNotify.OnMove() => 0;
-        int IVsWindowFrameNotify.OnSize() => 0;
-        int IVsWindowFrameNotify.OnDockableChange(int fDockable) => 0;
+        int IVsWindowFrameNotify.OnMove() => Constants.S_OK;
+        int IVsWindowFrameNotify.OnSize() => Constants.S_OK;
+        int IVsWindowFrameNotify.OnDockableChange(int fDockable) => Constants.S_OK;
 
         int IVsWindowFrameNotify2.OnClose(ref uint pgrfSaveOptions)
         {
             this.telemetry.TrackEvent(Constants.EventClosePane, this.viewModel.GetEntryTelemetryProperties());
-            return 0;
+            return Constants.S_OK;
         }
 
         int IVsDebuggerEvents.OnModeChange(DBGMODE dbgmodeNew)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (dbgmodeNew.HasFlag(DBGMODE.DBGMODE_Run))
             {
                 this.telemetry.TrackEvent(Constants.EventDebugStart, this.viewModel.GetEntryTelemetryProperties());
 
                 this.viewModel.IsDebugging = true;
                 this.viewModel.ClearEntries();
+
+                this.WaitForDebugOutputTextBuffer();
             }
             else if (dbgmodeNew.HasFlag(DBGMODE.DBGMODE_Break))
             {
@@ -316,7 +351,7 @@ namespace XamlBinding.ToolWindow
                 this.viewModel.IsDebugging = false;
             }
 
-            return 0;
+            return Constants.S_OK;
         }
     }
 }

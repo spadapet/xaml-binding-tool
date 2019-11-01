@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.PlatformUI;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +11,7 @@ namespace XamlBinding.Utility
     /// <summary>
     /// Package options that are saved per-solution
     /// </summary>
-    internal class SolutionOptions : PropertyNotifier
+    internal class SolutionOptions : ObservableObject
     {
         private ConcurrentDictionary<string, object> solutionOptions;
 
@@ -23,8 +24,6 @@ namespace XamlBinding.Utility
         {
             if (!string.IsNullOrEmpty(key))
             {
-                this.OnPropertyChanging(key);
-
                 if (value == null)
                 {
                     this.solutionOptions.TryRemove(key, out _);
@@ -34,7 +33,7 @@ namespace XamlBinding.Utility
                     this.solutionOptions[key] = value;
                 }
 
-                this.OnPropertyChanged(key);
+                this.NotifyPropertyChanged(key);
             }
         }
 
@@ -62,7 +61,6 @@ namespace XamlBinding.Utility
 
         public void Load(Stream stream)
         {
-            this.OnPropertiesChanging();
             this.solutionOptions.Clear();
 
             try
@@ -78,7 +76,7 @@ namespace XamlBinding.Utility
                 Debug.Fail("Failed to load options", ex.Message);
             }
 
-            this.OnPropertiesChanged();
+            this.NotifyPropertyChanged();
         }
 
         public void Save(Stream stream)

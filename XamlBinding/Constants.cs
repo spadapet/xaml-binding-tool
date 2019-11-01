@@ -8,6 +8,9 @@ namespace XamlBinding
     {
         // Helpers
         public readonly static bool IsXamlDesigner = DesignerProperties.GetIsInDesignMode(new DependencyObject());
+        public const string DataBindingTraceKey = @"Debugger\Tracing\WPF.DataBinding";
+        public const string DataBindingTraceLevel = "Level";
+        public const int S_OK = 0;
 
         // Commands from VS
         public const string CommandSet97String = "5efc7975-14bc-11cf-9b2b-00aa00573819";
@@ -26,6 +29,7 @@ namespace XamlBinding
 
         // Telemetry
         public const string ApplicationInsightsInstrumentationKeyString = "CA03211C-F990-4E39-A24E-FF5CDC946D9B";
+        public const string VsBindingPaneFeaturePrefix = @"vs/XamlBindingPanePrototype/";
 
         // Telemetry events
         public const string EventActivatePane = "ActivatePane";
