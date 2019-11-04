@@ -23,7 +23,7 @@ namespace XamlBinding.ToolWindow.Table
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 control.SetFilter(nameof(TableSearchTask), null);
-            });
+            }).FileAndForget(Constants.VsBindingPaneFeaturePrefix + nameof(TableSearchTask.ClearSearch));
         }
 
         protected override void OnStartSearch()
@@ -32,7 +32,7 @@ namespace XamlBinding.ToolWindow.Table
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 this.control.SetFilter(nameof(TableSearchTask), new TableSearchFilter(this.SearchQuery, this.control));
-            });
+            }).FileAndForget(Constants.VsBindingPaneFeaturePrefix + nameof(this.OnStartSearch));
 
             base.OnStartSearch();
         }

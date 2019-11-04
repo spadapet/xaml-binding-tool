@@ -16,3 +16,5 @@ Right now a small set of failures are fully parsed and transformed into pretty c
 **Sample output while debugging a WPF app:**
 
 ![XAML Binding Failures](https://raw.githubusercontent.com/spadapet/xaml-binding-tool/master/XamlBinding/Resources/Sample.png)
+
+![XAML Binding Failures](https://raw.githubusercontent.com/spadapet/xaml-binding-tool/master/XamlBinding/Resources/SampleDark.png)
