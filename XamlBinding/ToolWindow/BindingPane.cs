@@ -13,8 +13,8 @@ using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using System.Threading;
 using XamlBinding.Package;
+using XamlBinding.Parser;
 using XamlBinding.Resources;
-using XamlBinding.ToolWindow.Parser;
 using XamlBinding.Utility;
 using Task = System.Threading.Tasks.Task;
 
@@ -24,14 +24,14 @@ namespace XamlBinding.ToolWindow
     /// This hooks up the tool window's user interface with Visual Studio
     /// </summary>
     [Guid(Constants.BindingPaneString)]
-    internal class BindingPane
+    internal sealed class BindingPane
         : ToolWindowPane
         , IVsDebuggerEvents
         , IVsWindowFrameNotify
         , IVsWindowFrameNotify2
     {
         private readonly BindingPackage package;
-        private readonly OutputParser outputParser;
+        private readonly IOutputParser outputParser;
         private readonly BindingPaneViewModel viewModel;
         private readonly CancellationTokenSource cancellationTokenSource;
 
@@ -51,7 +51,7 @@ namespace XamlBinding.ToolWindow
             StringCache stringCache = new StringCache();
 
             this.package = package;
-            this.outputParser = new OutputParser(stringCache);
+            this.outputParser = new WpfOutputParser(stringCache);
             this.viewModel = new BindingPaneViewModel(package.Telemetry, stringCache);
             this.cancellationTokenSource = new CancellationTokenSource();
 
@@ -180,7 +180,7 @@ namespace XamlBinding.ToolWindow
             {
                 if (this.control == null)
                 {
-                    this.control = new BindingPaneControl(this.viewModel, this.package.TableManager, this.package.TableControlProvider);
+                    this.control = new BindingPaneControl(this, this.viewModel);
                     base.Content = this.control;
                 }
 

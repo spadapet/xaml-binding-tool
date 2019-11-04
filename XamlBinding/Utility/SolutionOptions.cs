@@ -11,7 +11,7 @@ namespace XamlBinding.Utility
     /// <summary>
     /// Package options that are saved per-solution
     /// </summary>
-    internal class SolutionOptions : ObservableObject
+    internal sealed class SolutionOptions : ObservableObject
     {
         private ConcurrentDictionary<string, object> solutionOptions;
 

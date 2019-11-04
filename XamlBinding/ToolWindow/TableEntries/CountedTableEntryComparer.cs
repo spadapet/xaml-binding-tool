@@ -2,7 +2,7 @@
 
 namespace XamlBinding.ToolWindow.TableEntries
 {
-    internal class CountedTableEntryComparer : IEqualityComparer<ICountedTableEntry>
+    internal sealed class CountedTableEntryComparer : IEqualityComparer<ICountedTableEntry>
     {
         bool IEqualityComparer<ICountedTableEntry>.Equals(ICountedTableEntry x, ICountedTableEntry y)
         {

@@ -6,7 +6,7 @@ namespace XamlBinding.Utility
     /// <summary>
     /// Just to make the XAML designer happy
     /// </summary>
-    public class DesignTimeResources : ResourceDictionary
+    public sealed class DesignTimeResources : ResourceDictionary
     {
         public DesignTimeResources()
         {

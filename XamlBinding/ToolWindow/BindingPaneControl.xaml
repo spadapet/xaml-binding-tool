@@ -17,6 +17,7 @@
     d:DesignHeight="200" d:DesignWidth="900"
     DataContext="{Binding ViewModel, RelativeSource={RelativeSource Mode=Self}}"
     d:DataContext="{d:DesignInstance local:BindingPaneViewModel, IsDesignTimeCreatable=True}"
+    Loaded="OnLoaded"
     IsKeyboardFocusWithinChanged="OnKeyboardFocusWithinChanged">
     <UserControl.Resources>
         <ResourceDictionary>

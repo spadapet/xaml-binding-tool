@@ -12,7 +12,7 @@ namespace XamlBinding.Utility
     /// <summary>
     /// Sends anonymous event data to Application Insights
     /// </summary>
-    internal class Telemetry : IDisposable
+    internal sealed class Telemetry : IDisposable
     {
         private readonly SolutionOptions options;
         private readonly TelemetryConfiguration config;

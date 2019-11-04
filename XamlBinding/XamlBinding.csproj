@@ -53,19 +53,26 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
-    <Compile Include="ToolWindow\Parser\TraceLevels.cs" />
-    <Compile Include="ToolWindow\Parser\OutputParser.cs" />
+    <Compile Include="Parser\IOutputParser.cs" />
+    <Compile Include="Parser\WpfOutputParser.cs" />
+    <Compile Include="Parser\TraceLevels.cs" />
     <Compile Include="ToolWindow\BindingPane.cs" />
     <Compile Include="ToolWindow\BindingPaneControl.xaml.cs">
       <DependentUpon>BindingPaneControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ToolWindow\BindingPaneController.cs" />
     <Compile Include="ToolWindow\BindingPaneViewModel.cs" />
-    <Compile Include="ToolWindow\Parser\ErrorCodes.cs" />
+    <Compile Include="Parser\ErrorCodes.cs" />
     <Compile Include="ToolWindow\TableEntries\BindingEntry.cs" />
     <Compile Include="ToolWindow\TableEntries\CountedTableEntryComparer.cs" />
     <Compile Include="ToolWindow\TableEntries\ICountedTableEntry.cs" />
-    <Compile Include="ToolWindow\Table\TableColumn.cs" />
+    <Compile Include="ToolWindow\Table\ColumnDescription.cs" />
+    <Compile Include="ToolWindow\Table\ColumnTarget.cs" />
+    <Compile Include="ToolWindow\Table\ColumnDataContextType.cs" />
+    <Compile Include="ToolWindow\Table\ColumnCount.cs" />
+    <Compile Include="ToolWindow\Table\ColumnCode.cs" />
+    <Compile Include="ToolWindow\Table\ColumnBindingPath.cs" />
+    <Compile Include="ToolWindow\Table\ColumnNames.cs" />
     <Compile Include="ToolWindow\Table\TableDataSource.cs" />
     <Compile Include="ToolWindow\Table\TableSearchFilter.cs" />
     <Compile Include="ToolWindow\Table\TableSearchTask.cs" />

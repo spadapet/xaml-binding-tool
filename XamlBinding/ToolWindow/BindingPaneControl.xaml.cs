@@ -1,4 +1,5 @@
 ﻿using Microsoft.Internal.VisualStudio.Shell.TableControl;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.TableControl;
 using Microsoft.VisualStudio.Shell.TableManager;
@@ -11,49 +12,30 @@ using XamlBinding.ToolWindow.Table;
 
 namespace XamlBinding.ToolWindow
 {
-    internal partial class BindingPaneControl : UserControl, IDisposable
+    internal sealed partial class BindingPaneControl : UserControl, IDisposable
     {
         public BindingPaneViewModel ViewModel { get; }
-        private readonly ITableManager tableManager;
-        private readonly IWpfTableControlProvider tableControlProvider;
-        private TableDataSource tableDataSource;
+        private readonly IServiceProvider serviceProvider;
+        private readonly TableDataSource tableDataSource;
+        private ITableManager tableManager;
         private IWpfTableControl4 tableControl;
 
-        public BindingPaneControl(BindingPaneViewModel viewModel, ITableManager tableManager, IWpfTableControlProvider tableControlProvider)
+        public BindingPaneControl(IServiceProvider serviceProvider, BindingPaneViewModel viewModel)
         {
             this.ViewModel = viewModel;
-            this.tableManager = tableManager;
-            this.tableControlProvider = tableControlProvider;
+            this.serviceProvider = serviceProvider;
             this.tableDataSource = new TableDataSource(this.ViewModel.Entries);
-            this.tableManager.AddSource(this.tableDataSource, TableColumn.AllColumnNames.ToArray());
 
             this.InitializeComponent();
-
-            this.tableControl = (IWpfTableControl4)this.tableControlProvider.CreateControl(this.tableManager, true,
-                TableColumn.AllColumnNames.Select(n => new ColumnState2(n, true, 0)),
-                TableColumn.AllColumnNames.ToArray());
-
-            this.tableHolder.Child = this.tableControl.Control;
         }
 
         public void Dispose()
         {
             this.tableHolder.Child = null;
 
-            this.tableControl.Dispose();
-            this.tableControl = null;
-
-            this.tableManager.RemoveSource(this.tableDataSource);
+            this.tableControl?.Dispose();
+            this.tableManager?.RemoveSource(this.tableDataSource);
             this.tableDataSource.Dispose();
-            this.tableDataSource = null;
-        }
-
-        private void OnKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs args)
-        {
-            this.ViewModel.Telemetry.TrackEvent(Constants.EventFocusChanged, new Dictionary<string, object>()
-            {
-                { Constants.PropertyFocused, this.IsKeyboardFocusWithin },
-            });
         }
 
         public void ClearSearch()
@@ -69,6 +51,33 @@ namespace XamlBinding.ToolWindow
             return this.tableControl != null
                 ? new TableSearchTask(cookie, searchQuery, searchCallback, this.tableControl)
                 : null;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs args)
+        {
+            if (this.tableControl == null && this.serviceProvider.GetService(typeof(SComponentModel)) is IComponentModel componentModel)
+            {
+                ITableManagerProvider tableManagerProvider = componentModel.GetService<ITableManagerProvider>();
+                IWpfTableControlProvider tableControlProvider = componentModel.GetService<IWpfTableControlProvider>();
+
+                this.tableManager = tableManagerProvider.GetTableManager(Constants.TableManagerString);
+                this.tableManager.AddSource(this.tableDataSource, ColumnNames.DefaultSet.ToArray());
+
+                this.tableControl = (IWpfTableControl4)tableControlProvider.CreateControl(this.tableManager, true,
+                    ColumnNames.DefaultSet.Select(n => new ColumnState2(n, isVisible: true, width: 0)),
+                    ColumnNames.DefaultSet.ToArray());
+
+                this.tableHolder.Child = this.tableControl.Control;
+
+            }
+        }
+
+        private void OnKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            this.ViewModel.Telemetry.TrackEvent(Constants.EventFocusChanged, new Dictionary<string, object>()
+            {
+                { Constants.PropertyFocused, this.IsKeyboardFocusWithin },
+            });
         }
     }
 }

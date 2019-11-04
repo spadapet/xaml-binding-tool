@@ -7,15 +7,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using XamlBinding.Parser;
 using XamlBinding.Resources;
-using XamlBinding.ToolWindow.Parser;
 
 namespace XamlBinding.ToolWindow
 {
     /// <summary>
     /// Executes commands in the toolbar
     /// </summary>
-    internal class BindingPaneController : IOleCommandTarget
+    internal sealed class BindingPaneController : IOleCommandTarget
     {
         private readonly BindingPaneViewModel viewModel;
         private readonly IVsUIShell shell;

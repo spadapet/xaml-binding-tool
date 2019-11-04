@@ -11,7 +11,7 @@ namespace XamlBinding.ToolWindow.Table
     /// <summary>
     /// Filters the table based on a search
     /// </summary>
-    internal class TableSearchFilter : IEntryFilter
+    internal sealed class TableSearchFilter : IEntryFilter
     {
         private readonly List<string> tokens;
         private readonly List<ITableColumnDefinition> columns;

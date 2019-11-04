@@ -61,11 +61,38 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}.{1}, type={2}.
+        /// </summary>
+        public static string BindingEntry_TargetText {
+            get {
+                return ResourceManager.GetString("BindingEntry.TargetText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value &apos;{0}&apos; cannot be assigned to property {1}.
+        /// </summary>
+        public static string Description_BadValueAtTransfer {
+            get {
+                return ResourceManager.GetString("Description.BadValueAtTransfer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot convert from type &apos;{0}&apos; to &apos;{1}&apos;. Consider setting a converter on the binding..
+        /// </summary>
+        public static string Description_CannotCreateDefaultValueConverter {
+            get {
+                return ResourceManager.GetString("Description.CannotCreateDefaultValueConverter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} property not found on type {1}.
         /// </summary>
-        public static string Description_PathError {
+        public static string Description_ClrReplaceItem {
             get {
-                return ResourceManager.GetString("Description.PathError", resourceCulture);
+                return ResourceManager.GetString("Description.ClrReplaceItem", resourceCulture);
             }
         }
         
@@ -120,24 +147,6 @@ namespace XamlBinding.Resources {
         public static string Header_Target {
             get {
                 return ResourceManager.GetString("Header.Target", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}, type={1}.
-        /// </summary>
-        public static string SourceText {
-            get {
-                return ResourceManager.GetString("SourceText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}.{1}, type={2}.
-        /// </summary>
-        public static string TargetText {
-            get {
-                return ResourceManager.GetString("TargetText", resourceCulture);
             }
         }
         

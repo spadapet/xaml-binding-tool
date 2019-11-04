@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using XamlBinding.ToolWindow.Parser;
+using XamlBinding.Parser;
 using XamlBinding.ToolWindow.TableEntries;
 using XamlBinding.Utility;
 
@@ -14,7 +14,7 @@ namespace XamlBinding.ToolWindow
     /// <summary>
     /// Keeps the state of the tool window
     /// </summary>
-    internal class BindingPaneViewModel : ObservableObject
+    internal sealed class BindingPaneViewModel : ObservableObject
     {
         public Telemetry Telemetry { get; }
         public BindingPaneController Controller { get; }
@@ -22,7 +22,7 @@ namespace XamlBinding.ToolWindow
         public bool CanClearEntries => this.entries.Count > 0;
 
         private readonly StringCache stringCache;
-        private ObservableCollection<ITableEntry> entries;
+        private readonly ObservableCollection<ITableEntry> entries;
         private readonly HashSet<ICountedTableEntry> countedEntries;
         private string traceLevel;
         private bool isDebugging;
@@ -46,9 +46,9 @@ namespace XamlBinding.ToolWindow
 
             if (Constants.IsXamlDesigner)
             {
-                this.entries.Add(new BindingEntry(ErrorCodes.PathError, Match.Empty, stringCache));
-                this.entries.Add(new BindingEntry(ErrorCodes.PathError, Match.Empty, stringCache));
-                this.entries.Add(new BindingEntry(ErrorCodes.PathError, Match.Empty, stringCache));
+                this.entries.Add(new BindingEntry(ErrorCodes.ClrReplaceItem, Match.Empty, stringCache));
+                this.entries.Add(new BindingEntry(ErrorCodes.ClrReplaceItem, Match.Empty, stringCache));
+                this.entries.Add(new BindingEntry(ErrorCodes.ClrReplaceItem, Match.Empty, stringCache));
                 this.entries.Add(new BindingEntry(ErrorCodes.Unknown, Match.Empty, stringCache));
                 this.entries.Add(new BindingEntry(ErrorCodes.Unknown, Match.Empty, stringCache));
             }
@@ -110,7 +110,7 @@ namespace XamlBinding.ToolWindow
                 if (i != -1)
                 {
                     // Tell the table that this entry has been updated
-                    this.entries[i] = entry;
+                    this.entries[i] = existingCountedEntry;
                 }
             }
             else

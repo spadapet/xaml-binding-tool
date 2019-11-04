@@ -1,4 +1,4 @@
-﻿namespace XamlBinding.ToolWindow.Parser
+﻿namespace XamlBinding.Parser
 {
     internal enum TraceLevels
     {

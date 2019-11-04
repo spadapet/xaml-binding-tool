@@ -7,7 +7,7 @@ namespace XamlBinding.Utility
     /// Binding failure columns are going to contain a lot of duplicate strings.
     /// This class makes sure only one copy of each string stays in memory
     /// </summary>
-    internal class StringCache
+    internal sealed class StringCache
     {
         private readonly ConcurrentDictionary<string, string> stringCache;
         private readonly ConcurrentDictionary<int, string> intCache;

@@ -7,7 +7,7 @@ namespace XamlBinding.ToolWindow.Table
     /// <summary>
     /// Sets the appropriate filter on the table when a search is run or cleared
     /// </summary>
-    internal class TableSearchTask : VsSearchTask
+    internal sealed class TableSearchTask : VsSearchTask
     {
         private readonly IWpfTableControl4 control;
 

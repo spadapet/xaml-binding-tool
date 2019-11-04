@@ -1,8 +1,5 @@
-﻿using Microsoft.Internal.VisualStudio.Shell.TableControl;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Shell;
+﻿using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Shell.TableManager;
 using System;
 using System.ComponentModel.Design;
 using System.IO;
@@ -11,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using XamlBinding.Resources;
 using XamlBinding.ToolWindow;
-using XamlBinding.ToolWindow.Table;
 using XamlBinding.Utility;
 using Task = System.Threading.Tasks.Task;
 
@@ -27,18 +23,13 @@ namespace XamlBinding.Package
     [Guid(Constants.BindingPackageString)]
     internal sealed class BindingPackage : AsyncPackage
     {
-        public IComponentModel ComponentModel { get; private set; }
-        public IWpfTableControlProvider TableControlProvider { get; private set; }
-        public ITableManager TableManager { get; private set; }
         public Telemetry Telemetry { get; private set; }
 
         private SolutionOptions options;
-        private IDisposable registeredTableColumns;
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            this.ComponentModel = await this.GetServiceAsync<SComponentModel, IComponentModel>();
 
             this.options = new SolutionOptions();
             this.AddOptionKey(Constants.SolutionOptionKey);
@@ -46,29 +37,15 @@ namespace XamlBinding.Package
             this.Telemetry = new Telemetry(this.options);
             this.Telemetry.TrackEvent(Constants.EventInitializePackage);
 
-            await this.InitializeTableAsync();
-            await this.InitializeMenuCommandsAsync();
+            await this.InitMenuCommandsAsync();
         }
 
-        private async Task InitializeTableAsync()
+        private async Task InitMenuCommandsAsync()
         {
-            ITableManagerProvider tableManagerProvider = this.ComponentModel.GetService<ITableManagerProvider>();
-            this.TableControlProvider = this.ComponentModel.GetService<IWpfTableControlProvider>();
-
-            await Task.Run(() =>
-            {
-                this.TableManager = tableManagerProvider.GetTableManager(Constants.TableManagerString);
-                this.registeredTableColumns = TableColumn.RegisterColumnDefinitions(this.TableControlProvider);
-            });
-        }
-
-        private async Task InitializeMenuCommandsAsync()
-        {
-            // Add a command handler for showing the tool window
             CommandID menuCommandID = new CommandID(Constants.GuidPackageCommandSet, Constants.BindingPaneCommandId);
             MenuCommand menuItem = new MenuCommand((s, a) => this.ShowBindingPane(), menuCommandID);
-            OleMenuCommandService commandService = await this.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
-            commandService?.AddCommand(menuItem);
+            IMenuCommandService commandService = await this.GetServiceAsync<IMenuCommandService, IMenuCommandService>();
+            commandService.AddCommand(menuItem);
         }
 
         protected override void Dispose(bool disposing)
@@ -76,7 +53,6 @@ namespace XamlBinding.Package
             if (disposing)
             {
                 this.Telemetry?.Dispose();
-                this.registeredTableColumns?.Dispose();
             }
 
             base.Dispose(disposing);
