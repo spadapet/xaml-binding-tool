@@ -1,17 +1,20 @@
 ﻿using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Shell.TableManager;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Threading;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using System.Threading;
 using XamlBinding.Package;
 using XamlBinding.Resources;
+using XamlBinding.ToolWindow.Parser;
 using XamlBinding.Utility;
 using Task = System.Threading.Tasks.Task;
 
@@ -28,7 +31,7 @@ namespace XamlBinding.ToolWindow
         , IVsWindowFrameNotify2
     {
         private readonly BindingPackage package;
-        private readonly BindingEntryParser bindingParser;
+        private readonly OutputParser outputParser;
         private readonly BindingPaneViewModel viewModel;
         private readonly CancellationTokenSource cancellationTokenSource;
 
@@ -48,7 +51,7 @@ namespace XamlBinding.ToolWindow
             StringCache stringCache = new StringCache();
 
             this.package = package;
-            this.bindingParser = new BindingEntryParser(stringCache);
+            this.outputParser = new OutputParser(stringCache);
             this.viewModel = new BindingPaneViewModel(package.Telemetry, stringCache);
             this.cancellationTokenSource = new CancellationTokenSource();
 
@@ -287,9 +290,9 @@ namespace XamlBinding.ToolWindow
             int textStart = startPoint.GetPosition(snapshot);
             int textLength = endPoint.GetPoint(snapshot) - startPoint.GetPoint(snapshot);
             string text = snapshot.GetText(textStart, textLength);
-            BindingEntry[] entries = this.bindingParser.ParseOutput(text);
+            IReadOnlyList<ITableEntry> entries = this.outputParser.ParseOutput(text);
 
-            if (entries.Length > 0)
+            if (entries.Count > 0)
             {
                 this.package.JoinableTaskFactory.RunAsync(async delegate
                 {

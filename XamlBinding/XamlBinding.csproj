@@ -53,16 +53,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
-    <Compile Include="ToolWindow\BindingTraceLevels.cs" />
-    <Compile Include="ToolWindow\BindingEntryParser.cs" />
+    <Compile Include="ToolWindow\Parser\TraceLevels.cs" />
+    <Compile Include="ToolWindow\Parser\OutputParser.cs" />
     <Compile Include="ToolWindow\BindingPane.cs" />
     <Compile Include="ToolWindow\BindingPaneControl.xaml.cs">
       <DependentUpon>BindingPaneControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ToolWindow\BindingPaneController.cs" />
     <Compile Include="ToolWindow\BindingPaneViewModel.cs" />
-    <Compile Include="ToolWindow\BindingCodes.cs" />
-    <Compile Include="ToolWindow\BindingEntry.cs" />
+    <Compile Include="ToolWindow\Parser\ErrorCodes.cs" />
+    <Compile Include="ToolWindow\TableEntries\BindingEntry.cs" />
+    <Compile Include="ToolWindow\TableEntries\CountedTableEntryComparer.cs" />
+    <Compile Include="ToolWindow\TableEntries\ICountedTableEntry.cs" />
     <Compile Include="ToolWindow\Table\TableColumn.cs" />
     <Compile Include="ToolWindow\Table\TableDataSource.cs" />
     <Compile Include="ToolWindow\Table\TableSearchFilter.cs" />

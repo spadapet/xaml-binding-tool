@@ -9,7 +9,7 @@ namespace XamlBinding.ToolWindow.Table
     /// </summary>
     internal class TableSearchTask : VsSearchTask
     {
-        private IWpfTableControl4 control;
+        private readonly IWpfTableControl4 control;
 
         public TableSearchTask(uint cookie, IVsSearchQuery searchQuery, IVsSearchCallback searchCallback, IWpfTableControl4 control)
             : base(cookie, searchQuery, searchCallback)

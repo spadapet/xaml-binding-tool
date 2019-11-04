@@ -1,6 +1,6 @@
-﻿namespace XamlBinding.ToolWindow
+﻿namespace XamlBinding.ToolWindow.Parser
 {
-    internal enum BindingTraceLevels
+    internal enum TraceLevels
     {
         Off,
         Critical,

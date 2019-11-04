@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using XamlBinding.Resources;
+using XamlBinding.ToolWindow.Parser;
 
 namespace XamlBinding.ToolWindow
 {
@@ -31,14 +32,14 @@ namespace XamlBinding.ToolWindow
             this.traceLevelDisplayNames = Resource.TraceLevels.Split(',');
             this.traceLevels = new string[]
             {
-                nameof(BindingTraceLevels.Off),
-                nameof(BindingTraceLevels.Critical),
-                nameof(BindingTraceLevels.Error),
-                nameof(BindingTraceLevels.Warning),
-                nameof(BindingTraceLevels.Information),
-                nameof(BindingTraceLevels.Verbose),
-                nameof(BindingTraceLevels.Activity),
-                nameof(BindingTraceLevels.All),
+                nameof(TraceLevels.Off),
+                nameof(TraceLevels.Critical),
+                nameof(TraceLevels.Error),
+                nameof(TraceLevels.Warning),
+                nameof(TraceLevels.Information),
+                nameof(TraceLevels.Verbose),
+                nameof(TraceLevels.Activity),
+                nameof(TraceLevels.All),
             };
 
             if (!Constants.IsXamlDesigner)
@@ -167,7 +168,7 @@ namespace XamlBinding.ToolWindow
                 {
                     this.viewModel.Telemetry.TrackEvent(Constants.EventSetTraceLevel, new Dictionary<string, object>()
                     {
-                        { Constants.PropertyTraceLevel, (BindingTraceLevels)i },
+                        { Constants.PropertyTraceLevel, (TraceLevels)i },
                     });
 
                     using (RegistryKey rootKey = VSRegistry.RegistryRoot(ServiceProvider.GlobalProvider, __VsLocalRegistryType.RegType_UserSettings, writable: true))

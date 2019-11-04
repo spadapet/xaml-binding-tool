@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.Shell.TableManager;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
@@ -17,18 +18,25 @@ namespace XamlBinding.ToolWindow.Table
         string ITableDataSource.Identifier => Constants.TableManagerString;
         string ITableDataSource.DisplayName => Resource.ToolWindow_Title;
         private readonly ConcurrentDictionary<Subscription, bool> subscriptions;
-        private readonly ObservableCollection<BindingEntry> entryList;
+        private readonly IReadOnlyList<ITableEntry> entryList;
 
-        public TableDataSource(ObservableCollection<BindingEntry> entryList)
+        public TableDataSource(IReadOnlyList<ITableEntry> entryList)
         {
             this.subscriptions = new ConcurrentDictionary<Subscription, bool>();
             this.entryList = entryList;
-            this.entryList.CollectionChanged += this.OnCollectionChanged;
+
+            if (this.entryList is ObservableCollection<ITableEntry> observableList)
+            {
+                observableList.CollectionChanged += this.OnCollectionChanged;
+            }
         }
 
         public void Dispose()
         {
-            this.entryList.CollectionChanged -= this.OnCollectionChanged;
+            if (this.entryList is ObservableCollection<ITableEntry> observableList)
+            {
+                observableList.CollectionChanged -= this.OnCollectionChanged;
+            }
         }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)

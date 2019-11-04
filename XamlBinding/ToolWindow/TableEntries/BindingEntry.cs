@@ -9,15 +9,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using XamlBinding.Resources;
+using XamlBinding.ToolWindow.Parser;
 using XamlBinding.ToolWindow.Table;
 using XamlBinding.Utility;
 
-namespace XamlBinding.ToolWindow
+namespace XamlBinding.ToolWindow.TableEntries
 {
     /// <summary>
     /// One entry in the failure list
     /// </summary>
-    internal class BindingEntry : ObservableObject, IEquatable<BindingEntry>, IWpfTableEntry
+    internal class BindingEntry : ObservableObject, IEquatable<BindingEntry>, ICountedTableEntry, IWpfTableEntry
     {
         public int Code { get; }
         public int Count { get; private set; }
@@ -101,7 +102,7 @@ namespace XamlBinding.ToolWindow
 
                 switch (this.Code)
                 {
-                    case BindingCodes.PathError:
+                    case ErrorCodes.PathError:
                         text = string.Format(CultureInfo.CurrentCulture, Resource.Description_PathError, this.SourceProperty, this.SourcePropertyType);
                         break;
 

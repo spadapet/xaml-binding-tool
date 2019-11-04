@@ -1,10 +1,12 @@
 ﻿using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell.TableManager;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Linq;
 using System.Text.RegularExpressions;
+using XamlBinding.ToolWindow.Parser;
+using XamlBinding.ToolWindow.TableEntries;
 using XamlBinding.Utility;
 
 namespace XamlBinding.ToolWindow
@@ -16,11 +18,12 @@ namespace XamlBinding.ToolWindow
     {
         public Telemetry Telemetry { get; }
         public BindingPaneController Controller { get; }
-        public ObservableCollection<BindingEntry> Entries { get; }
-        public bool CanClearEntries => this.entrySet.Count > 0;
+        public IReadOnlyList<ITableEntry> Entries => this.entries;
+        public bool CanClearEntries => this.entries.Count > 0;
 
         private readonly StringCache stringCache;
-        private readonly HashSet<BindingEntry> entrySet;
+        private ObservableCollection<ITableEntry> entries;
+        private readonly HashSet<ICountedTableEntry> countedEntries;
         private string traceLevel;
         private bool isDebugging;
 
@@ -36,26 +39,44 @@ namespace XamlBinding.ToolWindow
             this.Controller = new BindingPaneController(this);
 
             this.stringCache = stringCache;
-            this.entrySet = new HashSet<BindingEntry>();
-            this.Entries = new ObservableCollection<BindingEntry>();
-            this.Entries.CollectionChanged += this.OnEntryCollectionChanged;
-            this.traceLevel = nameof(BindingTraceLevels.Error);
+            this.countedEntries = new HashSet<ICountedTableEntry>(new CountedTableEntryComparer());
+            this.entries = new ObservableCollection<ITableEntry>();
+            this.entries.CollectionChanged += this.OnEntryCollectionChanged;
+            this.traceLevel = nameof(TraceLevels.Error);
 
             if (Constants.IsXamlDesigner)
             {
-                this.Entries.Add(new BindingEntry(BindingCodes.PathError, Match.Empty, stringCache));
-                this.Entries.Add(new BindingEntry(BindingCodes.PathError, Match.Empty, stringCache));
-                this.Entries.Add(new BindingEntry(BindingCodes.PathError, Match.Empty, stringCache));
-                this.Entries.Add(new BindingEntry(BindingCodes.Unknown, Match.Empty, stringCache));
-                this.Entries.Add(new BindingEntry(BindingCodes.Unknown, Match.Empty, stringCache));
+                this.entries.Add(new BindingEntry(ErrorCodes.PathError, Match.Empty, stringCache));
+                this.entries.Add(new BindingEntry(ErrorCodes.PathError, Match.Empty, stringCache));
+                this.entries.Add(new BindingEntry(ErrorCodes.PathError, Match.Empty, stringCache));
+                this.entries.Add(new BindingEntry(ErrorCodes.Unknown, Match.Empty, stringCache));
+                this.entries.Add(new BindingEntry(ErrorCodes.Unknown, Match.Empty, stringCache));
             }
         }
 
         private void OnEntryCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
-            if (this.entrySet.Count < 2)
+            if (this.entries.Count < 2)
             {
                 this.NotifyPropertyChanged(nameof(this.CanClearEntries));
+            }
+        }
+
+        private int ExpandedEntryCount
+        {
+            get
+            {
+                int count = this.entries.Count;
+
+                foreach (ITableEntry entry in this.entries)
+                {
+                    if (entry is ICountedTableEntry countedEntry)
+                    {
+                        count += countedEntry.Count - 1;
+                    }
+                }
+
+                return count;
             }
         }
 
@@ -63,34 +84,49 @@ namespace XamlBinding.ToolWindow
         {
             return new Dictionary<string, object>()
             {
-                {  Constants.PropertyEntryCount, this.entrySet.Count },
-                {  Constants.PropertyExpandedEntryCount, this.entrySet.Sum(e => e.Count) },
+                {  Constants.PropertyEntryCount, this.entries.Count },
+                {  Constants.PropertyExpandedEntryCount, this.ExpandedEntryCount },
             };
         }
 
         public void ClearEntries()
         {
-            this.entrySet.Clear();
-            this.Entries.Clear();
+            this.countedEntries.Clear();
+            this.entries.Clear();
             this.stringCache.Clear();
         }
 
-        public void AddEntry(BindingEntry entry)
+        public void AddEntry(ITableEntry entry)
         {
-            if (this.entrySet.TryGetValue(entry, out BindingEntry existingEntry))
+            ICountedTableEntry countedEntry = entry as ICountedTableEntry;
+
+            if (countedEntry != null && this.countedEntries.TryGetValue(countedEntry, out ICountedTableEntry existingCountedEntry))
             {
-                existingEntry.AddCount();
+                existingCountedEntry.AddCount();
+
+                int i = this.entries.IndexOf(entry);
+                Debug.Assert(i != -1, $"{nameof(this.countedEntries)} has extra entries in it.");
+
+                if (i != -1)
+                {
+                    // Tell the table that this entry has been updated
+                    this.entries[i] = entry;
+                }
             }
             else
             {
-                this.entrySet.Add(entry);
-                this.Entries.Add(entry);
+                if (countedEntry != null)
+                {
+                    this.countedEntries.Add(countedEntry);
+                }
+
+                this.entries.Add(entry);
             }
         }
 
-        public void AddEntries(IEnumerable<BindingEntry> entries)
+        public void AddEntries(IEnumerable<ITableEntry> entries)
         {
-            foreach (BindingEntry entry in entries)
+            foreach (ITableEntry entry in entries)
             {
                 this.AddEntry(entry);
             }
@@ -99,7 +135,7 @@ namespace XamlBinding.ToolWindow
         public string TraceLevel
         {
             get => this.traceLevel;
-            set => this.SetProperty(ref this.traceLevel, value ?? nameof(BindingTraceLevels.Error));
+            set => this.SetProperty(ref this.traceLevel, value ?? nameof(TraceLevels.Error));
         }
 
         public bool IsDebugging

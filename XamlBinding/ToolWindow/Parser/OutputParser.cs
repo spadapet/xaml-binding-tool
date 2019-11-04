@@ -1,51 +1,56 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Shell.TableManager;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using XamlBinding.ToolWindow.TableEntries;
 using XamlBinding.Utility;
 
-namespace XamlBinding.ToolWindow
+namespace XamlBinding.ToolWindow.Parser
 {
     /// <summary>
-    /// Converts debug output into a list of binding entries
+    /// Converts debug output into a list of table entries
     /// </summary>
-    internal class BindingEntryParser
+    internal class OutputParser
     {
         private readonly StringCache stringCache;
         private readonly Regex processTextRegex;
         private readonly Regex pathErrorRegex;
 
-        public BindingEntryParser(StringCache stringCache)
+        private const string CaptureCode = "code";
+        private const string CaptureText = "text";
+
+        public OutputParser(StringCache stringCache)
         {
             this.stringCache = stringCache;
 
-            this.processTextRegex = new Regex(@"^System.Windows.Data Error: (?<code>\d+) : (?<text>.+?)$",
+            this.processTextRegex = new Regex($@"^System.Windows.Data Error: (?<{OutputParser.CaptureCode}>\d+) : (?<{OutputParser.CaptureText}>.+?)$",
                 RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline | RegexOptions.Multiline);
 
-            this.pathErrorRegex = new Regex($@"BindingExpression path error: '(?<{nameof(BindingEntry.SourceProperty)}>.+?)' property not found on '(object|current item of collection)' '{BindingEntryParser.CaptureItem(nameof(BindingEntry.SourcePropertyType), nameof(BindingEntry.SourcePropertyName))}'. BindingExpression:Path=(?<{nameof(BindingEntry.BindingPath)}>.+?); DataItem={BindingEntryParser.CaptureItem(nameof(BindingEntry.DataItemType), nameof(BindingEntry.DataItemName))}; target element is {BindingEntryParser.CaptureItem(nameof(BindingEntry.TargetElementType), nameof(BindingEntry.TargetElementName))}; target property is '(?<{nameof(BindingEntry.TargetProperty)}>.+?)' \(type '(?<{nameof(BindingEntry.TargetPropertyType)}>.+?)'\)",
+            this.pathErrorRegex = new Regex($@"BindingExpression path error: '(?<{nameof(BindingEntry.SourceProperty)}>.+?)' property not found on '(object|current item of collection)' '{OutputParser.CaptureItem(nameof(BindingEntry.SourcePropertyType), nameof(BindingEntry.SourcePropertyName))}'. BindingExpression:Path=(?<{nameof(BindingEntry.BindingPath)}>.+?); DataItem={OutputParser.CaptureItem(nameof(BindingEntry.DataItemType), nameof(BindingEntry.DataItemName))}; target element is {OutputParser.CaptureItem(nameof(BindingEntry.TargetElementType), nameof(BindingEntry.TargetElementName))}; target property is '(?<{nameof(BindingEntry.TargetProperty)}>.+?)' \(type '(?<{nameof(BindingEntry.TargetPropertyType)}>.+?)'\)",
                 RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
         }
 
-        public BindingEntry[] ParseOutput(string text)
+        public IReadOnlyList<ITableEntry> ParseOutput(string text)
         {
             MatchCollection matches = this.processTextRegex.Matches(text);
             if (matches.Count == 0)
             {
-                return Array.Empty<BindingEntry>();
+                return Array.Empty<ITableEntry>();
             }
 
-            List<BindingEntry> entries = new List<BindingEntry>(matches.Count);
+            List<ITableEntry> entries = new List<ITableEntry>(matches.Count);
 
             foreach (Match match in matches)
             {
-                BindingEntry entry = null;
-                string errorCodeString = match.Groups["code"].Value;
+                ITableEntry entry = null;
+                string errorCodeString = match.Groups[OutputParser.CaptureCode].Value;
 
                 if (int.TryParse(errorCodeString, out int errorCode))
                 {
                     switch (errorCode)
                     {
-                        case BindingCodes.PathError:
+                        case ErrorCodes.PathError:
                             entry = this.ProcessPathError(match);
                             break;
 
@@ -61,12 +66,12 @@ namespace XamlBinding.ToolWindow
                 }
             }
 
-            return entries.ToArray();
+            return entries;
         }
 
         private BindingEntry ProcessPathError(Match match)
         {
-            string text = match.Groups["text"].Value;
+            string text = match.Groups[OutputParser.CaptureText].Value;
             Match textMatch = this.pathErrorRegex.Match(text);
 
             if (!textMatch.Success)
@@ -75,12 +80,12 @@ namespace XamlBinding.ToolWindow
                 return null;
             }
 
-            return new BindingEntry(BindingCodes.PathError, textMatch, this.stringCache);
+            return new BindingEntry(ErrorCodes.PathError, textMatch, this.stringCache);
         }
 
         private BindingEntry ProcessUnknownError(int errorCode, Match match)
         {
-            return new BindingEntry(errorCode, match.Groups["text"].Value, this.stringCache);
+            return new BindingEntry(errorCode, match.Groups[OutputParser.CaptureText].Value, this.stringCache);
         }
 
         private static string CaptureItem(string groupType, string groupName)
