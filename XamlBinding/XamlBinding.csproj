@@ -105,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\CommandLocation.png" />
+    <None Include="Resources\SampleDark.png" />
     <Content Include="Resources\Logo128.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
