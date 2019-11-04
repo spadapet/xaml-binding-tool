@@ -8,6 +8,9 @@ using XamlBinding.Resources;
 
 namespace XamlBinding.ToolWindow.Table
 {
+    /// <summary>
+    /// Provides column data to the table from a list of binding entries
+    /// </summary>
     internal class TableDataSource : ITableDataSource, IDisposable
     {
         string ITableDataSource.SourceTypeIdentifier => Constants.TableManagerString;

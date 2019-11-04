@@ -299,23 +299,21 @@ namespace XamlBinding.ToolWindow
             }
         }
 
-#if SEARCH_ENABLED
         public override bool SearchEnabled => true;
 
         public override void ClearSearch()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            base.ClearSearch();
+            this.control?.ClearSearch();
         }
 
         public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            return new SearchTask(dwCookie, pSearchQuery, pSearchCallback);
+            return this.control?.CreateSearch(dwCookie, pSearchQuery, pSearchCallback);
         }
-#endif
 
         int IVsWindowFrameNotify.OnShow(int fShow)
         {

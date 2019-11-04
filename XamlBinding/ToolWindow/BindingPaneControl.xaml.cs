@@ -1,4 +1,5 @@
 ﻿using Microsoft.Internal.VisualStudio.Shell.TableControl;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.TableControl;
 using Microsoft.VisualStudio.Shell.TableManager;
 using System;
@@ -53,6 +54,21 @@ namespace XamlBinding.ToolWindow
             {
                 { Constants.PropertyFocused, this.IsKeyboardFocusWithin },
             });
+        }
+
+        public void ClearSearch()
+        {
+            if (this.tableControl != null)
+            {
+                TableSearchTask.ClearSearch(this.tableControl);
+            }
+        }
+
+        public IVsSearchTask CreateSearch(uint cookie, IVsSearchQuery searchQuery, IVsSearchCallback searchCallback)
+        {
+            return this.tableControl != null
+                ? new TableSearchTask(cookie, searchQuery, searchCallback, this.tableControl)
+                : null;
         }
     }
 }

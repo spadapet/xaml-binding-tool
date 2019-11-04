@@ -65,6 +65,8 @@
     <Compile Include="ToolWindow\BindingEntry.cs" />
     <Compile Include="ToolWindow\Table\TableColumn.cs" />
     <Compile Include="ToolWindow\Table\TableDataSource.cs" />
+    <Compile Include="ToolWindow\Table\TableSearchFilter.cs" />
+    <Compile Include="ToolWindow\Table\TableSearchTask.cs" />
     <Compile Include="Utility\DesignTimeResources.cs" />
     <Compile Include="Utility\SolutionOptions.cs" />
     <Compile Include="Utility\StringCache.cs" />

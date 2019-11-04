@@ -14,7 +14,13 @@
             </Menu>
         </Menus>
         <Groups>
-            <Group guid="guidBindingPaneCmdSet" id="ToolbarGroup" priority="0x0000">
+            <Group guid="guidBindingPaneCmdSet" id="ToolbarGroup1" priority="0x0000">
+                <Parent guid="guidBindingPaneCmdSet" id="Toolbar"/>
+            </Group>
+            <Group guid="guidBindingPaneCmdSet" id="ToolbarGroup2" priority="0x0001">
+                <Parent guid="guidBindingPaneCmdSet" id="Toolbar"/>
+            </Group>
+            <Group guid="guidBindingPaneCmdSet" id="ToolbarGroup3" priority="0x0002">
                 <Parent guid="guidBindingPaneCmdSet" id="Toolbar"/>
             </Group>
         </Groups>
@@ -27,7 +33,7 @@
                 </Strings>
             </Button>
             <Button guid="guidBindingPaneCmdSet" id="ClearCommandId" priority="0x0100" type="Button">
-                <Parent guid="guidBindingPaneCmdSet" id="ToolbarGroup" />
+                <Parent guid="guidBindingPaneCmdSet" id="ToolbarGroup1" />
                 <Icon guid="guidImageCatalog" id="ClearWindowContent" />
                 <CommandFlag>IconAndText</CommandFlag>
                 <CommandFlag>IconIsMoniker</CommandFlag>
@@ -38,7 +44,7 @@
                 </Strings>
             </Button>
             <Button guid="guidBindingPaneCmdSet" id="TraceLevelOptionsId" priority="0x0102" type="Button">
-                <Parent guid="guidBindingPaneCmdSet" id="ToolbarGroup" />
+                <Parent guid="guidBindingPaneCmdSet" id="ToolbarGroup2" />
                 <CommandFlag>TextOnly</CommandFlag>
                 <Strings>
                     <ButtonText>...</ButtonText>
@@ -46,10 +52,21 @@
                     <ToolTipText>Show a dialog to change the trace level for the next time debugging starts</ToolTipText>
                 </Strings>
             </Button>
+            <Button guid="guidBindingPaneCmdSet" id="ProvideFeedbackId" priority="0x0103" type="Button">
+                <Parent guid="guidBindingPaneCmdSet" id="ToolbarGroup3" />
+                <Icon guid="guidImageCatalog" id="Feedback" />
+                <CommandFlag>IconAndText</CommandFlag>
+                <CommandFlag>IconIsMoniker</CommandFlag>
+                <Strings>
+                    <ButtonText>Feedback</ButtonText>
+                    <CommandName>Feedback</CommandName>
+                    <ToolTipText>Opens the issues page on GitHub to log a bug or suggestion</ToolTipText>
+                </Strings>
+            </Button>
         </Buttons>
         <Combos>
             <Combo guid="guidBindingPaneCmdSet" id="TraceLevelDropDownId" priority="0x0101" type="DropDownCombo" defaultWidth="90" idCommandList="TraceLevelDropDownListId">
-                <Parent guid="guidBindingPaneCmdSet" id="ToolbarGroup" />
+                <Parent guid="guidBindingPaneCmdSet" id="ToolbarGroup2" />
                 <CommandFlag>IconAndText</CommandFlag>
                 <Strings>
                     <ButtonText>Trace level: </ButtonText>
@@ -70,11 +87,14 @@
         </GuidSymbol>
         <GuidSymbol name="guidBindingPaneCmdSet" value="{86940b37-818d-4b50-86e6-87a7c3ea77b9}">
             <IDSymbol name="Toolbar" value="0x1000" />
-            <IDSymbol name="ToolbarGroup" value="0x1050" />
+            <IDSymbol name="ToolbarGroup1" value="0x1050" />
+            <IDSymbol name="ToolbarGroup2" value="0x1051" />
+            <IDSymbol name="ToolbarGroup3" value="0x1052" />
             <IDSymbol name="ClearCommandId" value="0x0100" />
             <IDSymbol name="TraceLevelDropDownId" value="0x0101" />
             <IDSymbol name="TraceLevelDropDownListId" value="0x0102" />
             <IDSymbol name="TraceLevelOptionsId" value="0x0103" />
+            <IDSymbol name="ProvideFeedbackId" value="0x0104" />
         </GuidSymbol>
         <GuidSymbol name="guidImages" value="{2e47d056-94f1-4c81-920f-42b390524fe5}" >
             <IDSymbol name="BindingPaneCommandIcon" value="1" />
@@ -84,6 +104,7 @@
         </GuidSymbol>
         <GuidSymbol name="guidImageCatalog" value="{ae27a6b0-e345-4288-96df-5eaf394ee369}">
             <IDSymbol name="ClearWindowContent" value="482" />
+            <IDSymbol name="Feedback" value="3680" />
         </GuidSymbol>
     </Symbols>
 </CommandTable>

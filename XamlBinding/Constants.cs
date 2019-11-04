@@ -37,6 +37,7 @@ namespace XamlBinding
         public const int TraceLevelDropDownId = 0x0101;
         public const int TraceLevelDropDownListId = 0x0102;
         public const int TraceLevelOptionsId = 0x0103;
+        public const int ProvideFeedbackId = 0x0104;
 
         // Per-solution options
         public const string SolutionOptionKey = @"XamlBindingPackage.Options";
@@ -55,6 +56,7 @@ namespace XamlBinding
         public const string EventInitializePackage = "InitializePackage";
         public const string EventInitializePane = "InitializePane";
         public const string EventFocusChanged = "FocusChanged";
+        public const string EventProvideFeedback = "ProvideFeedback";
         public const string EventShowPane = "ShowPane";
         public const string EventShowTraceOptions = "ShowTraceOptions";
         public const string EventSetTraceLevel = "SetTraceLevel";

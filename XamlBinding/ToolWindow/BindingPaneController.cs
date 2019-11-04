@@ -78,6 +78,7 @@ namespace XamlBinding.ToolWindow
                     case Constants.TraceLevelDropDownId:
                     case Constants.TraceLevelDropDownListId:
                     case Constants.TraceLevelOptionsId:
+                    case Constants.ProvideFeedbackId:
                         prgCmds[0].cmdf = Constants.OLECMDF_SUPPORTED_AND_ENABLED;
                         break;
 
@@ -114,7 +115,11 @@ namespace XamlBinding.ToolWindow
                         break;
 
                     case Constants.TraceLevelOptionsId:
-                        this.ShowTraceLevelOptions();
+                        this.OnTraceLevelOptions();
+                        break;
+
+                    case Constants.ProvideFeedbackId:
+                        this.OnProvideFeedback();
                         break;
 
                     default:
@@ -124,6 +129,23 @@ namespace XamlBinding.ToolWindow
             }
 
             return Constants.OLECMDERR_E_NOTSUPPORTED;
+        }
+
+        private void OnProvideFeedback()
+        {
+            this.viewModel.Telemetry.TrackEvent(Constants.EventShowTraceOptions);
+
+            try
+            {
+                Process.Start(new ProcessStartInfo(@"https://github.com/spadapet/xaml-binding-tool/issues")
+                {
+                    UseShellExecute = true,
+                });
+            }
+            catch (Exception ex)
+            {
+                this.viewModel.Telemetry.TrackException(ex);
+            }
         }
 
         private void OnTraceLevelCommand(IntPtr pvaIn, IntPtr pvaOut)
@@ -139,7 +161,7 @@ namespace XamlBinding.ToolWindow
                 int i = Array.IndexOf(this.traceLevelDisplayNames, newValue);
                 if (i >= this.traceLevels.Length)
                 {
-                    this.ShowTraceLevelOptions();
+                    this.OnTraceLevelOptions();
                 }
                 else if (i >= 0)
                 {
@@ -165,7 +187,7 @@ namespace XamlBinding.ToolWindow
             }
         }
 
-        private void ShowTraceLevelOptions()
+        private void OnTraceLevelOptions()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 

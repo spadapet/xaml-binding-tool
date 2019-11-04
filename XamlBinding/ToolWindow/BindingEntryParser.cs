@@ -22,7 +22,6 @@ namespace XamlBinding.ToolWindow
             this.processTextRegex = new Regex(@"^System.Windows.Data Error: (?<code>\d+) : (?<text>.+?)$",
                 RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline | RegexOptions.Multiline);
 
-            // BindingEntryType.PathError
             this.pathErrorRegex = new Regex($@"BindingExpression path error: '(?<{nameof(BindingEntry.SourceProperty)}>.+?)' property not found on '(object|current item of collection)' '{BindingEntryParser.CaptureItem(nameof(BindingEntry.SourcePropertyType), nameof(BindingEntry.SourcePropertyName))}'. BindingExpression:Path=(?<{nameof(BindingEntry.BindingPath)}>.+?); DataItem={BindingEntryParser.CaptureItem(nameof(BindingEntry.DataItemType), nameof(BindingEntry.DataItemName))}; target element is {BindingEntryParser.CaptureItem(nameof(BindingEntry.TargetElementType), nameof(BindingEntry.TargetElementName))}; target property is '(?<{nameof(BindingEntry.TargetProperty)}>.+?)' \(type '(?<{nameof(BindingEntry.TargetPropertyType)}>.+?)'\)",
                 RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
         }

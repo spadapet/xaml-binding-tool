@@ -8,6 +8,10 @@ using XamlBinding.Resources;
 
 namespace XamlBinding.ToolWindow.Table
 {
+    /// <summary>
+    /// Represents one column in the table (default width, image, etc).
+    /// Also there are helpers for getting all columns.
+    /// </summary>
     internal class TableColumn : TableColumnDefinitionBase
     {
         public const string ColumnBindingPath = TableColumn.ColumnPrefix + nameof(TableColumn.ColumnBindingPath);
@@ -54,6 +58,9 @@ namespace XamlBinding.ToolWindow.Table
             this.Name = name;
         }
 
+        /// <summary>
+        /// These are all the columns that show up in the table
+        /// </summary>
         public static IEnumerable<string> AllColumnNames
         {
             get
@@ -68,6 +75,9 @@ namespace XamlBinding.ToolWindow.Table
             }
         }
 
+        /// <summary>
+        /// These are all columns that are defined in this module
+        /// </summary>
         private static IEnumerable<TableColumn> ColumnDefinitions
         {
             get
@@ -87,7 +97,7 @@ namespace XamlBinding.ToolWindow.Table
                 yield return new TableColumn(TableColumn.ColumnDataContextType)
                 {
                     DisplayNameOverride = Resource.Header_DataContextType,
-                    DefaultWidthOverride = 100,
+                    DefaultWidthOverride = 150,
                 };
 
                 yield return new TableColumn(TableColumn.ColumnBindingPath)
