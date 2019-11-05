@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.Debugger.ComponentInterfaces;
-using Microsoft.VisualStudio.PlatformUI;
+﻿using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.TableManager;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
