@@ -370,7 +370,7 @@ namespace XamlBinding.ToolWindow
             }
             else
             {
-                this.package.Telemetry.TrackEvent(Constants.EventDebugEnd, this.viewModel.GetEntryTelemetryProperties());
+                this.package.Telemetry.TrackEvent(Constants.EventDebugEnd, this.viewModel.GetEntryTelemetryProperties(includeErrorCodes: true));
                 this.viewModel.IsDebugging = false;
             }
 

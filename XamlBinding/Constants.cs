@@ -63,8 +63,9 @@ namespace XamlBinding
 
         // Telemetry properties
         public const string PropertyEntryCount = "EntryCount";
-        public const string PropertyFocused = "Focused";
+        public const string PropertyErrorCodes = "ErrorCodes";
         public const string PropertyExpandedEntryCount = "ExpandedEntryCount";
+        public const string PropertyFocused = "Focused";
         public const string PropertyTraceLevel = "TraceLevel";
 
         // GUIDs

@@ -74,6 +74,8 @@
     <Compile Include="ToolWindow\Table\ColumnBindingPath.cs" />
     <Compile Include="ToolWindow\Table\ColumnNames.cs" />
     <Compile Include="ToolWindow\Table\TableDataSource.cs" />
+    <Compile Include="ToolWindow\Table\TableEventProcessor.cs" />
+    <Compile Include="ToolWindow\Table\TableEventProcessorProvider.cs" />
     <Compile Include="ToolWindow\Table\TableSearchFilter.cs" />
     <Compile Include="ToolWindow\Table\TableSearchTask.cs" />
     <Compile Include="Utility\DesignTimeResources.cs" />

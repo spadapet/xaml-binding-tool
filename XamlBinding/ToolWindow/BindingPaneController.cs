@@ -103,7 +103,7 @@ namespace XamlBinding.ToolWindow
                 switch (nCmdID)
                 {
                     case Constants.ClearCommandId:
-                        this.viewModel.Telemetry.TrackEvent(Constants.EventClearPane, this.viewModel.GetEntryTelemetryProperties());
+                        this.viewModel.Telemetry.TrackEvent(Constants.EventClearPane, this.viewModel.GetEntryTelemetryProperties(includeErrorCodes: true));
                         this.viewModel.ClearEntries();
                         break;
 
@@ -166,10 +166,7 @@ namespace XamlBinding.ToolWindow
                 }
                 else if (i >= 0)
                 {
-                    this.viewModel.Telemetry.TrackEvent(Constants.EventSetTraceLevel, new Dictionary<string, object>()
-                    {
-                        { Constants.PropertyTraceLevel, (TraceLevels)i },
-                    });
+                    this.viewModel.Telemetry.TrackEvent(Constants.EventSetTraceLevel, this.viewModel.GetEntryTelemetryProperties());
 
                     using (RegistryKey rootKey = VSRegistry.RegistryRoot(ServiceProvider.GlobalProvider, __VsLocalRegistryType.RegType_UserSettings, writable: true))
                     using (RegistryKey dataBindingOutputLevelKey = rootKey.CreateSubKey(Constants.DataBindingTraceKey, writable: true))

@@ -1,11 +1,14 @@
-﻿using Microsoft.VisualStudio.PlatformUI;
+﻿using Microsoft.VisualStudio.Debugger.ComponentInterfaces;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.TableManager;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 using XamlBinding.Parser;
+using XamlBinding.ToolWindow.Table;
 using XamlBinding.ToolWindow.TableEntries;
 using XamlBinding.Utility;
 
@@ -80,13 +83,35 @@ namespace XamlBinding.ToolWindow
             }
         }
 
-        public Dictionary<string, object> GetEntryTelemetryProperties()
+        public Dictionary<string, object> GetEntryTelemetryProperties(bool includeErrorCodes = false)
         {
-            return new Dictionary<string, object>()
+            Dictionary<string, object> properties = new Dictionary<string, object>()
             {
-                {  Constants.PropertyEntryCount, this.entries.Count },
-                {  Constants.PropertyExpandedEntryCount, this.ExpandedEntryCount },
+                { Constants.PropertyEntryCount, this.entries.Count },
+                { Constants.PropertyExpandedEntryCount, this.ExpandedEntryCount },
+                { Constants.PropertyTraceLevel, this.traceLevel },
             };
+
+            if (includeErrorCodes)
+            {
+                HashSet<int> codes = new HashSet<int>(this.entries.Count);
+
+                foreach (ITableEntry entry in this.entries)
+                {
+                    if (entry.TryGetValue(ColumnNames.Code, out int code))
+                    {
+                        codes.Add(code);
+                    }
+                }
+
+                List<int> codeList = codes.ToList();
+                codeList.Sort();
+
+                string codeString = string.Join(",", codeList);
+                properties[Constants.PropertyErrorCodes] = codeString;
+            }
+
+            return properties;
         }
 
         public void ClearEntries()
