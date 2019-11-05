@@ -10,10 +10,10 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using XamlBinding.Parser;
 using XamlBinding.Resources;
-using XamlBinding.ToolWindow.Table;
+using XamlBinding.ToolWindow.Columns;
 using XamlBinding.Utility;
 
-namespace XamlBinding.ToolWindow.TableEntries
+namespace XamlBinding.ToolWindow.Entries
 {
     /// <summary>
     /// One entry in the failure list

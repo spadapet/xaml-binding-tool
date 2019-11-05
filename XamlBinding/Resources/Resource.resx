@@ -139,7 +139,7 @@
     <value>Count</value>
   </data>
   <data name="Header.DataContextType" xml:space="preserve">
-    <value>DataContext Type</value>
+    <value>Data Context Type</value>
   </data>
   <data name="Header.Description" xml:space="preserve">
     <value>Description</value>

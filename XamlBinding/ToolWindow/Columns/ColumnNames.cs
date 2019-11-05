@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.Shell.TableControl;
 
-namespace XamlBinding.ToolWindow.Table
+namespace XamlBinding.ToolWindow.Columns
 {
     internal static class ColumnNames
     {

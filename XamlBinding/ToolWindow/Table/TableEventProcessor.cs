@@ -1,17 +1,43 @@
-﻿using Microsoft.VisualStudio.Shell.TableControl;
+﻿using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Shell.TableControl;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using IServiceProvider = System.IServiceProvider;
 
 namespace XamlBinding.ToolWindow.Table
 {
     internal sealed class TableEventProcessor : ITableControlEventProcessor
     {
         private readonly IServiceProvider services;
+        private readonly IWpfTableControl control;
 
-        public TableEventProcessor(IServiceProvider services)
+        public TableEventProcessor(IServiceProvider services, IWpfTableControl control)
         {
             this.services = services;
+            this.control = control;
+        }
+
+        private void ShowContextMenu(bool mousePosition)
+        {
+            ThreadHelper.JoinableTaskFactory.RunAsync(async delegate
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(alwaysYield: true);
+
+                FrameworkElement table = this.control.Control;
+                IOleCommandTarget commandTarget = table.Tag as IOleCommandTarget;
+                Point point = mousePosition
+                    ? table.PointToScreen(Mouse.GetPosition(table))
+                    : table.PointToScreen(new Point(0, table.RenderSize.Height)); // same as error list, but should use focus location
+                POINTS[] locationPoints = new[] { new POINTS() { x = (short)point.X, y = (short)point.Y } };
+
+                IVsUIShell shell = this.services.GetService<SVsUIShell, IVsUIShell>();
+                Guid commandSet = Constants.GuidBindingPaneCommandSet;
+
+                shell.ShowContextMenu(0, ref commandSet, Constants.BindingPaneContextMenuId, locationPoints, commandTarget);
+            }).FileAndForget(Constants.VsBindingPaneFeaturePrefix + nameof(ITableControlEventProcessor.PostprocessMouseRightButtonUp));
         }
 
         void ITableControlEventProcessor.KeyDown(KeyEventArgs args)
@@ -20,6 +46,11 @@ namespace XamlBinding.ToolWindow.Table
 
         void ITableControlEventProcessor.KeyUp(KeyEventArgs args)
         {
+            if (!args.Handled && args.Key == Key.Apps)
+            {
+                args.Handled = true;
+                this.ShowContextMenu(mousePosition: false);
+            }
         }
 
         void ITableControlEventProcessor.PostprocessDragEnter(ITableEntryHandle entry, DragEventArgs args)
@@ -72,6 +103,7 @@ namespace XamlBinding.ToolWindow.Table
 
         void ITableControlEventProcessor.PostprocessMouseRightButtonUp(ITableEntryHandle entry, MouseButtonEventArgs args)
         {
+            this.ShowContextMenu(mousePosition: true);
         }
 
         void ITableControlEventProcessor.PostprocessMouseUp(ITableEntryHandle entry, MouseButtonEventArgs args)

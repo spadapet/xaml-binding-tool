@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 using XamlBinding.Resources;
 
-namespace XamlBinding.ToolWindow.Table
+namespace XamlBinding.ToolWindow.Columns
 {
     [Export(typeof(ITableColumnDefinition))]
     [Name(ColumnNames.BindingPath)]

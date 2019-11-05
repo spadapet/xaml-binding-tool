@@ -19,7 +19,7 @@ namespace XamlBinding.ToolWindow.Table
 
         ITableControlEventProcessor ITableControlEventProcessorProvider.GetAssociatedEventProcessor(IWpfTableControl tableControl)
         {
-            return new TableEventProcessor(this.ServiceProvider);
+            return new TableEventProcessor(this.ServiceProvider, tableControl);
         }
     }
 }

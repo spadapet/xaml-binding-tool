@@ -9,15 +9,15 @@ namespace XamlBinding.ToolWindow.Table
     /// </summary>
     internal sealed class TableSearchTask : VsSearchTask
     {
-        private readonly IWpfTableControl4 control;
+        private readonly IWpfTableControl control;
 
-        public TableSearchTask(uint cookie, IVsSearchQuery searchQuery, IVsSearchCallback searchCallback, IWpfTableControl4 control)
+        public TableSearchTask(uint cookie, IVsSearchQuery searchQuery, IVsSearchCallback searchCallback, IWpfTableControl control)
             : base(cookie, searchQuery, searchCallback)
         {
             this.control = control;
         }
 
-        public static void ClearSearch(IWpfTableControl4 control)
+        public static void ClearSearch(IWpfTableControl control)
         {
             ThreadHelper.JoinableTaskFactory.RunAsync(async delegate
             {

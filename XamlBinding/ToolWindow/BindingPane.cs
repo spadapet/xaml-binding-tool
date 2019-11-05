@@ -33,9 +33,10 @@ namespace XamlBinding.ToolWindow
         private readonly BindingPackage package;
         private readonly IOutputParser outputParser;
         private readonly BindingPaneViewModel viewModel;
+        private readonly BindingPaneControl control;
+        private readonly BindingPaneController controller;
         private readonly CancellationTokenSource cancellationTokenSource;
 
-        private BindingPaneControl control;
         private ITextBuffer debugTextBuffer;
         private ITrackingPoint lastTextPoint;
         private RegistryKey dataBindingOutputLevelKey;
@@ -53,12 +54,15 @@ namespace XamlBinding.ToolWindow
             this.package = package;
             this.outputParser = new WpfOutputParser(stringCache);
             this.viewModel = new BindingPaneViewModel(package.Telemetry, stringCache);
+            this.control = new BindingPaneControl(this.package, this.viewModel);
+            this.controller = new BindingPaneController(package, this.viewModel, this.control.TableControl);
             this.cancellationTokenSource = new CancellationTokenSource();
 
             this.Caption = Resource.ToolWindow_Title;
-            this.ToolBar = new CommandID(Constants.GuidBindingPaneCommandSet, Constants.BindingPaneToolbarId);
+            this.Content = this.control;
+            this.ToolBarCommandTarget = this.controller;
             this.ToolBarLocation = (int)VSTWT_LOCATION.VSTWT_TOP;
-            this.ToolBarCommandTarget = this.viewModel.Controller;
+            this.ToolBar = new CommandID(Constants.GuidBindingPaneCommandSet, Constants.BindingPaneToolbarId);
         }
 
         /// <summary>
@@ -109,6 +113,7 @@ namespace XamlBinding.ToolWindow
             this.cancellationTokenSource.Cancel();
             this.cancellationTokenSource.Dispose();
             this.dataBindingOutputLevelKey.Dispose();
+            this.viewModel.Dispose();
 
             base.Dispose(disposing);
         }
@@ -169,23 +174,6 @@ namespace XamlBinding.ToolWindow
             }
 
             base.OnToolWindowCreated();
-        }
-
-        /// <summary>
-        /// Creates the WPF content
-        /// </summary>
-        public override object Content
-        {
-            get
-            {
-                if (this.control == null)
-                {
-                    this.control = new BindingPaneControl(this, this.viewModel);
-                    base.Content = this.control;
-                }
-
-                return this.control;
-            }
         }
 
         /// <summary>

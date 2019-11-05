@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.TableManager;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -7,8 +8,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using XamlBinding.Parser;
-using XamlBinding.ToolWindow.Table;
-using XamlBinding.ToolWindow.TableEntries;
+using XamlBinding.ToolWindow.Columns;
+using XamlBinding.ToolWindow.Entries;
 using XamlBinding.Utility;
 
 namespace XamlBinding.ToolWindow
@@ -16,10 +17,9 @@ namespace XamlBinding.ToolWindow
     /// <summary>
     /// Keeps the state of the tool window
     /// </summary>
-    internal sealed class BindingPaneViewModel : ObservableObject
+    internal sealed class BindingPaneViewModel : ObservableObject, IDisposable
     {
         public Telemetry Telemetry { get; }
-        public BindingPaneController Controller { get; }
         public IReadOnlyList<ITableEntry> Entries => this.entries;
         public bool CanClearEntries => this.entries.Count > 0;
 
@@ -38,8 +38,6 @@ namespace XamlBinding.ToolWindow
         public BindingPaneViewModel(Telemetry telemetry, StringCache stringCache)
         {
             this.Telemetry = telemetry;
-            this.Controller = new BindingPaneController(this);
-
             this.stringCache = stringCache;
             this.countedEntries = new HashSet<ICountedTableEntry>(new CountedTableEntryComparer());
             this.entries = new ObservableCollection<ITableEntry>();
@@ -54,6 +52,11 @@ namespace XamlBinding.ToolWindow
                 this.entries.Add(new BindingEntry(ErrorCodes.Unknown, Match.Empty, stringCache));
                 this.entries.Add(new BindingEntry(ErrorCodes.Unknown, Match.Empty, stringCache));
             }
+        }
+
+        public void Dispose()
+        {
+            this.entries.CollectionChanged -= this.OnEntryCollectionChanged;
         }
 
         private void OnEntryCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)

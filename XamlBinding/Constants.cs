@@ -33,11 +33,15 @@ namespace XamlBinding
         public const string BindingPaneCommandSetString = "86940B37-818D-4B50-86E6-87A7C3EA77B9";
         public static readonly Guid GuidBindingPaneCommandSet = new Guid(Constants.BindingPaneCommandSetString);
         public const int BindingPaneToolbarId = 0x1000;
+        public const int BindingPaneContextMenuId = 0x1001;
         public const int ClearCommandId = 0x0100;
         public const int TraceLevelDropDownId = 0x0101;
         public const int TraceLevelDropDownListId = 0x0102;
         public const int TraceLevelOptionsId = 0x0103;
         public const int ProvideFeedbackId = 0x0104;
+        public const int CopyDataContextId = 0x0105;
+        public const int CopyBindingPathId = 0x0106;
+        public const int CopyTargetId = 0x0107;
 
         // Per-solution options
         public const string SolutionOptionKey = @"XamlBindingPackage.Options";
@@ -49,6 +53,7 @@ namespace XamlBinding
         // Telemetry events
         public const string EventClearPane = "ClearPane";
         public const string EventClosePane = "ClosePane";
+        public const string EventCopyColumnValue = "CopyColumnValue";
         public const string EventDebugEnd = "DebugEnd";
         public const string EventDebugOutputConnected = "DebugOutputConnected";
         public const string EventDebugStart = "DebugStart";
@@ -62,6 +67,7 @@ namespace XamlBinding
         public const string EventSetTraceLevel = "SetTraceLevel";
 
         // Telemetry properties
+        public const string PropertyColumnValue = "ColumnValue";
         public const string PropertyEntryCount = "EntryCount";
         public const string PropertyErrorCodes = "ErrorCodes";
         public const string PropertyExpandedEntryCount = "ExpandedEntryCount";

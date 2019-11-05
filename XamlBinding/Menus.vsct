@@ -12,6 +12,11 @@
                     <CommandName>XAML Binding Failures Toolbar</CommandName>
                 </Strings>
             </Menu>
+            <Menu guid="guidBindingPaneCmdSet" id="ContextMenu" priority="0x0000" type="Context">
+                <Strings>
+                    <ButtonText>XAML Binding Failures</ButtonText>
+                </Strings>
+            </Menu>
         </Menus>
         <Groups>
             <Group guid="guidBindingPaneCmdSet" id="ToolbarGroup1" priority="0x0000">
@@ -22,6 +27,12 @@
             </Group>
             <Group guid="guidBindingPaneCmdSet" id="ToolbarGroup3" priority="0x0002">
                 <Parent guid="guidBindingPaneCmdSet" id="Toolbar"/>
+            </Group>
+            <Group guid="guidBindingPaneCmdSet" id="ContextMenuColumnGroup" priority="0x0010">
+                <Parent guid="guidBindingPaneCmdSet" id="ContextMenu"/>
+            </Group>
+            <Group guid="guidBindingPaneCmdSet" id="ContextMenuCopyGroup" priority="0x0011">
+                <Parent guid="guidBindingPaneCmdSet" id="ContextMenu"/>
             </Group>
         </Groups>
         <Buttons>
@@ -48,8 +59,8 @@
                 <CommandFlag>TextOnly</CommandFlag>
                 <Strings>
                     <ButtonText>...</ButtonText>
-                    <CommandName>Trace Level</CommandName>
-                    <ToolTipText>Show a dialog to change the trace level for the next time debugging starts</ToolTipText>
+                    <CommandName>WPF Trace Level</CommandName>
+                    <ToolTipText>Show a dialog to change the trace level for WPF data binding. It takes affect the next time debugging starts.</ToolTipText>
                 </Strings>
             </Button>
             <Button guid="guidBindingPaneCmdSet" id="ProvideFeedbackId" priority="0x0103" type="Button">
@@ -63,15 +74,36 @@
                     <ToolTipText>Opens the issues page on GitHub to log a bug or suggestion</ToolTipText>
                 </Strings>
             </Button>
+            <Button guid="guidBindingPaneCmdSet" id="CopyDataContextId" priority="0x0101" type="Button">
+                <Parent guid="guidBindingPaneCmdSet" id="ContextMenuCopyGroup" />
+                <CommandFlag>TextOnly</CommandFlag>
+                <Strings>
+                    <ButtonText>Copy Data Context Type</ButtonText>
+                </Strings>
+            </Button>
+            <Button guid="guidBindingPaneCmdSet" id="CopyBindingPathId" priority="0x0102" type="Button">
+                <Parent guid="guidBindingPaneCmdSet" id="ContextMenuCopyGroup" />
+                <CommandFlag>TextOnly</CommandFlag>
+                <Strings>
+                    <ButtonText>Copy Binding Path</ButtonText>
+                </Strings>
+            </Button>
+            <Button guid="guidBindingPaneCmdSet" id="CopyTargetId" priority="0x0103" type="Button">
+                <Parent guid="guidBindingPaneCmdSet" id="ContextMenuCopyGroup" />
+                <CommandFlag>TextOnly</CommandFlag>
+                <Strings>
+                    <ButtonText>Copy Target</ButtonText>
+                </Strings>
+            </Button>
         </Buttons>
         <Combos>
             <Combo guid="guidBindingPaneCmdSet" id="TraceLevelDropDownId" priority="0x0101" type="DropDownCombo" defaultWidth="90" idCommandList="TraceLevelDropDownListId">
                 <Parent guid="guidBindingPaneCmdSet" id="ToolbarGroup2" />
                 <CommandFlag>IconAndText</CommandFlag>
                 <Strings>
-                    <ButtonText>Trace level: </ButtonText>
-                    <CommandName>Trace Level</CommandName>
-                    <ToolTipText>Change the binding trace level for the next time debugging starts</ToolTipText>
+                    <ButtonText>WPF trace level: </ButtonText>
+                    <CommandName>WPF Trace Level</CommandName>
+                    <ToolTipText>Changes the trace level for WPF data binding. It takes affect the next time debugging starts.</ToolTipText>
                 </Strings>
             </Combo>
         </Combos>
@@ -80,6 +112,21 @@
         </Bitmaps>
     </Commands>
 
+    <CommandPlacements>
+        <CommandPlacement guid="guidVSStd97" id="cmdidCopy" priority="0x0100">
+            <Parent guid="guidBindingPaneCmdSet" id="ContextMenuCopyGroup" />
+        </CommandPlacement>
+        <CommandPlacement guid="guidSHLMainMenu" id="IDM_VS_CSCD_TASKLIST_SORT" priority="0x0100">
+            <Parent guid="guidBindingPaneCmdSet" id="ContextMenuColumnGroup" />
+        </CommandPlacement>
+        <CommandPlacement guid="guidSHLMainMenu" id="IDM_VS_CSCD_TASKLIST_COLUMNS" priority="0x0101">
+            <Parent guid="guidBindingPaneCmdSet" id="ContextMenuColumnGroup" />
+        </CommandPlacement>
+        <CommandPlacement guid="guidSHLMainMenu" id="IDM_VS_CSCD_TASKLIST_GROUPS" priority="0x0102">
+            <Parent guid="guidBindingPaneCmdSet" id="ContextMenuColumnGroup" />
+        </CommandPlacement>
+    </CommandPlacements>
+
     <Symbols>
         <GuidSymbol name="guidPackage" value="{08f93eba-7555-4ccb-9cea-82925fcbe8ff}" />
         <GuidSymbol name="guidPackageCmdSet" value="{418ab65f-8c3a-470a-8bef-7dfa5f82364a}">
@@ -87,14 +134,20 @@
         </GuidSymbol>
         <GuidSymbol name="guidBindingPaneCmdSet" value="{86940b37-818d-4b50-86e6-87a7c3ea77b9}">
             <IDSymbol name="Toolbar" value="0x1000" />
+            <IDSymbol name="ContextMenu" value="0x1001" />
             <IDSymbol name="ToolbarGroup1" value="0x1050" />
             <IDSymbol name="ToolbarGroup2" value="0x1051" />
             <IDSymbol name="ToolbarGroup3" value="0x1052" />
+            <IDSymbol name="ContextMenuCopyGroup" value="0x1053" />
+            <IDSymbol name="ContextMenuColumnGroup" value="0x1054" />
             <IDSymbol name="ClearCommandId" value="0x0100" />
             <IDSymbol name="TraceLevelDropDownId" value="0x0101" />
             <IDSymbol name="TraceLevelDropDownListId" value="0x0102" />
             <IDSymbol name="TraceLevelOptionsId" value="0x0103" />
             <IDSymbol name="ProvideFeedbackId" value="0x0104" />
+            <IDSymbol name="CopyDataContextId" value="0x0105" />
+            <IDSymbol name="CopyBindingPathId" value="0x0106" />
+            <IDSymbol name="CopyTargetId" value="0x0107" />
         </GuidSymbol>
         <GuidSymbol name="guidImages" value="{2e47d056-94f1-4c81-920f-42b390524fe5}" >
             <IDSymbol name="BindingPaneCommandIcon" value="1" />

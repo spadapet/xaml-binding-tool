@@ -124,7 +124,7 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DataContext Type.
+        ///   Looks up a localized string similar to Data Context Type.
         /// </summary>
         public static string Header_DataContextType {
             get {

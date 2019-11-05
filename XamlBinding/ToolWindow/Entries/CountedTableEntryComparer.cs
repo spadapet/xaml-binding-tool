@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace XamlBinding.ToolWindow.TableEntries
+namespace XamlBinding.ToolWindow.Entries
 {
     internal sealed class CountedTableEntryComparer : IEqualityComparer<ICountedTableEntry>
     {

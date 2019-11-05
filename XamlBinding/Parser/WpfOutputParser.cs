@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using XamlBinding.ToolWindow.TableEntries;
+using XamlBinding.ToolWindow.Entries;
 using XamlBinding.Utility;
 
 namespace XamlBinding.Parser
