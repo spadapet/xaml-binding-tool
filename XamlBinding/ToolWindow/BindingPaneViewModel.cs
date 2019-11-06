@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell.TableControl;
 using Microsoft.VisualStudio.Shell.TableManager;
 using System;
 using System.Collections.Generic;
@@ -6,8 +7,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
-using XamlBinding.Parser;
 using XamlBinding.ToolWindow.Columns;
 using XamlBinding.ToolWindow.Entries;
 using XamlBinding.Utility;
@@ -29,12 +28,6 @@ namespace XamlBinding.ToolWindow
         private string traceLevel;
         private bool isDebugging;
 
-        public BindingPaneViewModel()
-            : this(new Telemetry(), new StringCache())
-        {
-            Debug.Assert(Constants.IsXamlDesigner);
-        }
-
         public BindingPaneViewModel(Telemetry telemetry, StringCache stringCache)
         {
             this.Telemetry = telemetry;
@@ -42,16 +35,7 @@ namespace XamlBinding.ToolWindow
             this.countedEntries = new HashSet<ICountedTableEntry>(new CountedTableEntryComparer());
             this.entries = new ObservableCollection<ITableEntry>();
             this.entries.CollectionChanged += this.OnEntryCollectionChanged;
-            this.traceLevel = nameof(TraceLevels.Error);
-
-            if (Constants.IsXamlDesigner)
-            {
-                this.entries.Add(new BindingEntry(ErrorCodes.ClrReplaceItem, Match.Empty, stringCache));
-                this.entries.Add(new BindingEntry(ErrorCodes.ClrReplaceItem, Match.Empty, stringCache));
-                this.entries.Add(new BindingEntry(ErrorCodes.ClrReplaceItem, Match.Empty, stringCache));
-                this.entries.Add(new BindingEntry(ErrorCodes.Unknown, Match.Empty, stringCache));
-                this.entries.Add(new BindingEntry(ErrorCodes.Unknown, Match.Empty, stringCache));
-            }
+            this.traceLevel = nameof(Parser.WpfTraceLevel.Error);
         }
 
         public void Dispose()
@@ -96,17 +80,17 @@ namespace XamlBinding.ToolWindow
 
             if (includeErrorCodes)
             {
-                HashSet<int> codes = new HashSet<int>(this.entries.Count);
+                HashSet<string> codes = new HashSet<string>(this.entries.Count);
 
-                foreach (ITableEntry entry in this.entries)
+                foreach (IWpfTableEntry entry in this.entries.OfType<IWpfTableEntry>())
                 {
-                    if (entry.TryGetValue(ColumnNames.Code, out int code))
+                    if (entry.TryCreateStringContent(ColumnNames.Code, false, false, out string code))
                     {
                         codes.Add(code);
                     }
                 }
 
-                List<int> codeList = codes.ToList();
+                List<string> codeList = codes.ToList();
                 codeList.Sort();
 
                 string codeString = string.Join(",", codeList);
@@ -162,7 +146,7 @@ namespace XamlBinding.ToolWindow
         public string TraceLevel
         {
             get => this.traceLevel;
-            set => this.SetProperty(ref this.traceLevel, value ?? nameof(TraceLevels.Error));
+            set => this.SetProperty(ref this.traceLevel, value ?? nameof(Parser.WpfTraceLevel.Error));
         }
 
         public bool IsDebugging

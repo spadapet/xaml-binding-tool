@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Shell;
+﻿using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.ComponentModel.Design;
@@ -26,6 +27,21 @@ namespace XamlBinding.Package
         public Telemetry Telemetry { get; private set; }
 
         private SolutionOptions options;
+
+        public static BindingPackage Get(IServiceProvider serviceProvider)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            IVsShell shell = serviceProvider.GetService<SVsShell, IVsShell>();
+            Guid packageGuid = typeof(BindingPackage).GUID;
+
+            if (ErrorHandler.Succeeded(shell.LoadPackage(ref packageGuid, out IVsPackage package)))
+            {
+                return package as BindingPackage;
+            }
+
+            return null;
+        }
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {

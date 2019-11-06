@@ -3,7 +3,6 @@ using Microsoft.ApplicationInsights.Extensibility;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 
@@ -18,11 +17,6 @@ namespace XamlBinding.Utility
         private readonly TelemetryConfiguration config;
         private readonly TelemetryClient client;
         private bool disposed;
-
-        public Telemetry()
-        {
-            Debug.Assert(Constants.IsXamlDesigner);
-        }
 
         public Telemetry(SolutionOptions options)
         {

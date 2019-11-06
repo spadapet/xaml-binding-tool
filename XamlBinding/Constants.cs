@@ -62,6 +62,7 @@ namespace XamlBinding
         public const string EventInitializePane = "InitializePane";
         public const string EventFocusChanged = "FocusChanged";
         public const string EventProvideFeedback = "ProvideFeedback";
+        public const string EventShowContextMenu = "ShowContextMenu";
         public const string EventShowPane = "ShowPane";
         public const string EventShowTraceOptions = "ShowTraceOptions";
         public const string EventSetTraceLevel = "SetTraceLevel";

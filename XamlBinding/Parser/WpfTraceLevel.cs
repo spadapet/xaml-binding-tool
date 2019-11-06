@@ -1,6 +1,6 @@
 ﻿namespace XamlBinding.Parser
 {
-    internal enum TraceLevels
+    internal enum WpfTraceLevel
     {
         Off,
         Critical,

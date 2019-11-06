@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.Shell.TableControl;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using XamlBinding.Package;
 using IServiceProvider = System.IServiceProvider;
 
 namespace XamlBinding.ToolWindow.Table
@@ -22,18 +23,22 @@ namespace XamlBinding.ToolWindow.Table
 
         private void ShowContextMenu(bool mousePosition)
         {
+            // Already on main thread, but unwind callstack before showing the text menu
             ThreadHelper.JoinableTaskFactory.RunAsync(async delegate
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(alwaysYield: true);
 
+                BindingPackage package = BindingPackage.Get(this.services);
+                package.Telemetry.TrackEvent(Constants.EventShowContextMenu);
+
                 FrameworkElement table = this.control.Control;
-                IOleCommandTarget commandTarget = table.Tag as IOleCommandTarget;
                 Point point = mousePosition
                     ? table.PointToScreen(Mouse.GetPosition(table))
-                    : table.PointToScreen(new Point(0, table.RenderSize.Height)); // same as error list, but should use focus location
+                    : table.PointToScreen(new Point(table.RenderSize.Width / 2, table.RenderSize.Height / 2)); // should really get the focused entry position
                 POINTS[] locationPoints = new[] { new POINTS() { x = (short)point.X, y = (short)point.Y } };
 
                 IVsUIShell shell = this.services.GetService<SVsUIShell, IVsUIShell>();
+                IOleCommandTarget commandTarget = table.Tag as IOleCommandTarget;
                 Guid commandSet = Constants.GuidBindingPaneCommandSet;
 
                 shell.ShowContextMenu(0, ref commandSet, Constants.BindingPaneContextMenuId, locationPoints, commandTarget);
@@ -46,9 +51,10 @@ namespace XamlBinding.ToolWindow.Table
 
         void ITableControlEventProcessor.KeyUp(KeyEventArgs args)
         {
-            if (!args.Handled && args.Key == Key.Apps)
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (args.Key == Key.Apps || (args.Key == Key.F10 && args.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Shift)))
             {
-                args.Handled = true;
                 this.ShowContextMenu(mousePosition: false);
             }
         }
@@ -103,6 +109,8 @@ namespace XamlBinding.ToolWindow.Table
 
         void ITableControlEventProcessor.PostprocessMouseRightButtonUp(ITableEntryHandle entry, MouseButtonEventArgs args)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             this.ShowContextMenu(mousePosition: true);
         }
 

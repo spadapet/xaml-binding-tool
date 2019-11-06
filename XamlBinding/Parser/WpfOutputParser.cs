@@ -15,8 +15,10 @@ namespace XamlBinding.Parser
     {
         private readonly StringCache stringCache;
         private readonly Regex processTextRegex;
-        private readonly Dictionary<int, Regex> codeToRegex;
+        private readonly Dictionary<WpfTraceCode, Regex> codeToRegex;
 
+        private const string CaptureCategory = "category";
+        private const string CaptureSeverity = "severity";
         private const string CaptureCode = "code";
         private const string CaptureText = "text";
 
@@ -27,20 +29,20 @@ namespace XamlBinding.Parser
             const RegexOptions overallRegexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline | RegexOptions.Multiline;
             const RegexOptions lineRegexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture;
 
-            this.processTextRegex = new Regex($@"^System.Windows.Data Error: (?<{WpfOutputParser.CaptureCode}>\d+) : (?<{WpfOutputParser.CaptureText}>.+?)$", overallRegexOptions);
+            this.processTextRegex = new Regex($@"^System.Windows.(?<{WpfOutputParser.CaptureCategory}>Data|ResourceDictionary) (?<{WpfOutputParser.CaptureSeverity}>.+?): (?<{WpfOutputParser.CaptureCode}>\d+) : (?<{WpfOutputParser.CaptureText}>.+?)$", overallRegexOptions);
 
             // 1
-            Regex regexCannotCreateDefaultValueConverter = new Regex($@"Cannot create default converter to perform '(one-way|two-way)' conversions between types '(?<{BindingEntry.SourceFullType}>.+?)' and '(?<{BindingEntry.TargetFullType}>.+?)'. Consider using Converter property of Binding. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions);
+            Regex regexCannotCreateDefaultValueConverter = new Regex($@"Cannot create default converter to perform '(one-way|two-way)' conversions between types '(?<{WpfEntry.SourceFullType}>.+?)' and '(?<{WpfEntry.TargetFullType}>.+?)'. Consider using Converter property of Binding. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions);
             // 5
             Regex regexBadValueAtTransfer = new Regex($@"Value produced by BindingExpression is not valid for target property.; Value='(?<DataValue>.+?)' {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions);
             // 40
-            Regex regexClrReplaceItem = new Regex($@"BindingExpression path error: '(?<{nameof(BindingEntry.SourceProperty)}>.+?)' property not found on '(object|current item of collection)' '{WpfOutputParser.CaptureItem(nameof(BindingEntry.SourcePropertyType), nameof(BindingEntry.SourcePropertyName))}'. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions);
+            Regex regexClrReplaceItem = new Regex($@"BindingExpression path error: '(?<{nameof(WpfEntry.SourceProperty)}>.+?)' property not found on '(object|current item of collection)' '{WpfOutputParser.CaptureItem(nameof(WpfEntry.SourcePropertyType), nameof(WpfEntry.SourcePropertyName))}'. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions);
 
-            this.codeToRegex = new Dictionary<int, Regex>()
+            this.codeToRegex = new Dictionary<WpfTraceCode, Regex>()
             {
-                { ErrorCodes.CannotCreateDefaultValueConverter, regexCannotCreateDefaultValueConverter},
-                { ErrorCodes.BadValueAtTransfer, regexBadValueAtTransfer },
-                { ErrorCodes.ClrReplaceItem, regexClrReplaceItem },
+                { WpfTraceCode.CannotCreateDefaultValueConverter, regexCannotCreateDefaultValueConverter},
+                { WpfTraceCode.BadValueAtTransfer, regexBadValueAtTransfer },
+                { WpfTraceCode.ClrReplaceItem, regexClrReplaceItem },
             };
         }
 
@@ -56,19 +58,7 @@ namespace XamlBinding.Parser
 
             foreach (Match match in matches)
             {
-                string errorCodeString = match.Groups[WpfOutputParser.CaptureCode].Value;
-
-                ITableEntry entry;
-                if (int.TryParse(errorCodeString, out int errorCode) && this.codeToRegex.TryGetValue(errorCode, out Regex lineRegex))
-                {
-                    entry = this.ProcessKnownError(errorCode, lineRegex, match.Groups[WpfOutputParser.CaptureText].Value);
-                }
-                else
-                {
-                    entry = this.ProcessUnknownError(errorCode, match.Groups[WpfOutputParser.CaptureText].Value);
-                }
-
-                if (entry != null)
+                if (this.ProcessLine(match) is ITableEntry entry)
                 {
                     entries.Add(entry);
                 }
@@ -77,38 +67,70 @@ namespace XamlBinding.Parser
             return entries;
         }
 
-        private ITableEntry ProcessKnownError(int errorCode, Regex lineRegex, string lineText)
+        private ITableEntry ProcessLine(Match match)
         {
-            Match match = lineRegex.Match(lineText);
-            if (!match.Success)
-            {
-                Debug.Fail($"Failed to parse error code {errorCode}: {lineText}");
-                return this.ProcessUnknownError(errorCode, lineText);
-            }
+            string categoryString = match.Groups[WpfOutputParser.CaptureCategory].Value;
+            string severityString = match.Groups[WpfOutputParser.CaptureSeverity].Value;
+            string codeString = match.Groups[WpfOutputParser.CaptureCode].Value;
+            string text = match.Groups[WpfOutputParser.CaptureText].Value;
 
-            return new BindingEntry(errorCode, match, this.stringCache);
+            WpfTraceInfo info = new WpfTraceInfo(
+                WpfTraceCategoryUtility.Parse(categoryString),
+                WpfTraceSeverityUtility.Parse(severityString),
+                WpfTraceCodeUtility.Parse(codeString));
+
+            return this.codeToRegex.TryGetValue(info.Code, out Regex regex)
+                ? this.ProcessKnownError(info, regex, text)
+                : this.ProcessUnknownError(info, text);
         }
 
-        private ITableEntry ProcessUnknownError(int errorCode, string lineText)
+        private ITableEntry ProcessKnownError(WpfTraceInfo info, Regex lineRegex, string text)
         {
-            return new BindingEntry(errorCode, lineText, this.stringCache);
+            Match match = lineRegex.Match(text);
+            if (!match.Success)
+            {
+                Debug.Fail($"Failed to parse error code {(int)info.Code}: {text}");
+                return this.ProcessUnknownError(info, text);
+            }
+
+            return new WpfEntry(info, match, this.stringCache);
+        }
+
+        private ITableEntry ProcessUnknownError(WpfTraceInfo info, string lineText)
+        {
+            return new WpfEntry(info, lineText, this.stringCache);
+        }
+
+        private static string CaptureBindingExpression()
+        {
+            return $@"((BindingExpression:{WpfOutputParser.CaptureBindingPath()}; {WpfOutputParser.CaptureDataItem()}; )|(MultiBindingExpression:)){WpfOutputParser.CaptureTargetElement()}; {WpfOutputParser.CaptureTargetProperty()}";
+        }
+
+        private static string CaptureBindingPath()
+        {
+            // From TraceData.Describe in Microsoft.DotNet.Wpf\src\PresentationFramework\MS\Internal\TraceData.cs
+            return $@"(((Path|XPath)=(?<{nameof(WpfEntry.BindingPath)}>.+?))|\(no path\))";
+        }
+
+        private static string CaptureDataItem()
+        {
+            return $@"DataItem={WpfOutputParser.CaptureItem(nameof(WpfEntry.DataItemType), nameof(WpfEntry.DataItemName))}";
+        }
+
+        private static string CaptureTargetElement()
+        {
+            return $@"target element is {WpfOutputParser.CaptureItem(nameof(WpfEntry.TargetElementType), nameof(WpfEntry.TargetElementName))}";
+        }
+
+        private static string CaptureTargetProperty()
+        {
+            return $@"target property is '(?<{nameof(WpfEntry.TargetProperty)}>.+?)' \(type '(?<{nameof(WpfEntry.TargetPropertyType)}>.+?)'\)";
         }
 
         private static string CaptureItem(string groupType, string groupName)
         {
             // From TraceData.DescribeSourceObject in Microsoft.DotNet.Wpf\src\PresentationFramework\MS\Internal\TraceData.cs
             return $@"((?<{groupType}>null)|'(?<{groupType}>.+?)' \(HashCode=.+?\)|'(?<{groupType}>.+?)' \(Name='(?<{groupName}>.*?)'\))";
-        }
-
-        private static string CaptureBindingPath()
-        {
-            // From TraceData.Describe in Microsoft.DotNet.Wpf\src\PresentationFramework\MS\Internal\TraceData.cs
-            return $@"(((Path|XPath)=(?<{nameof(BindingEntry.BindingPath)}>.+?))|\(no path\))";
-        }
-
-        private static string CaptureBindingExpression()
-        {
-            return $@"BindingExpression:{WpfOutputParser.CaptureBindingPath()}; DataItem={WpfOutputParser.CaptureItem(nameof(BindingEntry.DataItemType), nameof(BindingEntry.DataItemName))}; target element is {WpfOutputParser.CaptureItem(nameof(BindingEntry.TargetElementType), nameof(BindingEntry.TargetElementName))}; target property is '(?<{nameof(BindingEntry.TargetProperty)}>.+?)' \(type '(?<{nameof(BindingEntry.TargetPropertyType)}>.+?)'\)";
         }
     }
 }

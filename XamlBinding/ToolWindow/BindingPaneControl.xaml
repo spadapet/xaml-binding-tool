@@ -5,32 +5,22 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:res="clr-namespace:XamlBinding.Resources"
-    xmlns:local="clr-namespace:XamlBinding.ToolWindow"
     xmlns:util="clr-namespace:XamlBinding.Utility"
     Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
     Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
     mc:Ignorable="d"
+    d:DesignHeight="200"
+    d:DesignWidth="900"
     AutomationProperties.Name="{x:Static res:Resource.ToolWindow_Title}"
-    d:DesignHeight="200" d:DesignWidth="900"
     DataContext="{Binding ViewModel, RelativeSource={RelativeSource Mode=Self}}"
-    d:DataContext="{d:DesignInstance local:BindingPaneViewModel, IsDesignTimeCreatable=True}"
     IsKeyboardFocusWithinChanged="OnKeyboardFocusWithinChanged">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <util:DesignTimeResources />
             </ResourceDictionary.MergedDictionaries>
-            <vsui:NegateBooleanConverter x:Key="NegateBooleanConverter" />
-            <Style TargetType="DataGrid">
-                <Setter Property="AutoGenerateColumns" Value="False" />
-                <Setter Property="HeadersVisibility" Value="Column" />
-                <Setter Property="HorizontalGridLinesBrush" Value="{x:Null}" />
-                <Setter Property="VerticalGridLinesBrush" Value="{x:Null}" />
-                <Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}" />
-            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}">

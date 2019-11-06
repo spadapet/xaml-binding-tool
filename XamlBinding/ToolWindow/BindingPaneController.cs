@@ -23,9 +23,9 @@ namespace XamlBinding.ToolWindow
     internal sealed class BindingPaneController : IOleCommandTarget
     {
         private readonly IServiceProvider serviceProvider;
+        private readonly IVsUIShell shell;
         private readonly BindingPaneViewModel viewModel;
         private readonly IWpfTableControl table;
-        private readonly IVsUIShell shell;
         private readonly string[] traceLevelDisplayNames;
         private readonly string[] traceLevels;
 
@@ -34,28 +34,24 @@ namespace XamlBinding.ToolWindow
             ThreadHelper.ThrowIfNotOnUIThread();
 
             this.serviceProvider = serviceProvider;
+            this.shell = this.serviceProvider.GetService<SVsUIShell, IVsUIShell>();
             this.viewModel = viewModel;
             this.viewModel.PropertyChanged += this.OnViewModelPropertyChanged;
             this.table = table;
             this.table.Control.Tag = this;
-
             this.traceLevelDisplayNames = Resource.TraceLevels.Split(',');
+
             this.traceLevels = new string[]
             {
-                nameof(TraceLevels.Off),
-                nameof(TraceLevels.Critical),
-                nameof(TraceLevels.Error),
-                nameof(TraceLevels.Warning),
-                nameof(TraceLevels.Information),
-                nameof(TraceLevels.Verbose),
-                nameof(TraceLevels.Activity),
-                nameof(TraceLevels.All),
+                nameof(WpfTraceLevel.Off),
+                nameof(WpfTraceLevel.Critical),
+                nameof(WpfTraceLevel.Error),
+                nameof(WpfTraceLevel.Warning),
+                nameof(WpfTraceLevel.Information),
+                nameof(WpfTraceLevel.Verbose),
+                nameof(WpfTraceLevel.Activity),
+                nameof(WpfTraceLevel.All),
             };
-
-            if (!Constants.IsXamlDesigner)
-            {
-                this.shell = this.serviceProvider.GetService<SVsUIShell, IVsUIShell>();
-            }
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs args)

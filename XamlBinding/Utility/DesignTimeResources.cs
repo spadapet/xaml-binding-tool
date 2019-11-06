@@ -1,5 +1,5 @@
-﻿using System.Windows;
-using System.Windows.Media;
+﻿using System.Drawing;
+using System.Windows;
 
 namespace XamlBinding.Utility
 {
@@ -12,9 +12,9 @@ namespace XamlBinding.Utility
         {
             if (Constants.IsXamlDesigner)
             {
-                this["VsBrush.Window"] = new SolidColorBrush();
-                this["VsBrush.WindowText"] = new SolidColorBrush();
-                this["VsBrush.ToolWindowBackground"] = new SolidColorBrush();
+                this["VsBrush.Window"] = SystemBrushes.Window;
+                this["VsBrush.WindowText"] = SystemBrushes.WindowText;
+                this["VsBrush.ToolWindowBackground"] = SystemBrushes.Control;
             }
         }
     }

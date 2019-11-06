@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.TableControl;
 using Microsoft.VisualStudio.Shell.TableManager;
 using System;
@@ -18,9 +17,9 @@ namespace XamlBinding.ToolWindow.Entries
     /// <summary>
     /// One entry in the failure list
     /// </summary>
-    internal sealed class BindingEntry : ObservableObject, IEquatable<BindingEntry>, ICountedTableEntry, IWpfTableEntry
+    internal sealed class WpfEntry : ObservableObject, IEquatable<WpfEntry>, ICountedTableEntry, IWpfTableEntry
     {
-        public int Code { get; }
+        public WpfTraceInfo Info { get; }
         public int Count { get; private set; }
         public string SourceProperty { get; }
         public string SourcePropertyType { get; }
@@ -35,56 +34,38 @@ namespace XamlBinding.ToolWindow.Entries
         public string TargetPropertyType { get; }
         public string Description { get; }
 
-        public const string SourceFullType = nameof(BindingEntry.SourceFullType);
-        public const string TargetFullType = nameof(BindingEntry.TargetFullType);
+        public const string SourceFullType = nameof(WpfEntry.SourceFullType);
+        public const string TargetFullType = nameof(WpfEntry.TargetFullType);
 
         private readonly StringCache stringCache;
         private int hashCode;
 
         object ITableEntry.Identity => this;
 
-        public BindingEntry(int code, Match match, StringCache stringCache)
+        public WpfEntry(WpfTraceInfo info, Match match, StringCache stringCache)
         {
             this.stringCache = stringCache;
-            this.Code = code;
+            this.Info = info;
             this.Count = 1;
 
-            if (Constants.IsXamlDesigner)
-            {
-                this.SourceProperty = nameof(this.SourceProperty);
-                this.SourcePropertyType = nameof(this.SourcePropertyType);
-                this.SourcePropertyName = nameof(this.SourcePropertyName);
-                this.BindingPath = nameof(this.BindingPath);
-                this.DataItemType = nameof(this.DataItemType);
-                this.DataItemName = nameof(this.DataItemName);
-                this.DataValue = nameof(this.DataValue);
-                this.TargetElementType = nameof(this.TargetElementType);
-                this.TargetElementName = nameof(this.TargetElementName);
-                this.TargetProperty = nameof(this.TargetProperty);
-                this.TargetPropertyType = nameof(this.TargetPropertyType);
-                this.Description = nameof(this.Description);
-            }
-            else
-            {
-                this.SourceProperty = stringCache.Get(match.Groups[nameof(this.SourceProperty)].Value);
-                this.SourcePropertyType = stringCache.Get(match.Groups[nameof(this.SourcePropertyType)].Value);
-                this.SourcePropertyName = stringCache.Get(match.Groups[nameof(this.SourcePropertyName)].Value);
-                this.BindingPath = stringCache.Get(match.Groups[nameof(this.BindingPath)].Value);
-                this.DataItemType = stringCache.Get(match.Groups[nameof(this.DataItemType)].Value);
-                this.DataItemName = stringCache.Get(match.Groups[nameof(this.DataItemName)].Value);
-                this.DataValue = stringCache.Get(match.Groups[nameof(this.DataValue)].Value);
-                this.TargetElementType = stringCache.Get(match.Groups[nameof(this.TargetElementType)].Value);
-                this.TargetElementName = stringCache.Get(match.Groups[nameof(this.TargetElementName)].Value);
-                this.TargetProperty = stringCache.Get(match.Groups[nameof(this.TargetProperty)].Value);
-                this.TargetPropertyType = stringCache.Get(match.Groups[nameof(this.TargetPropertyType)].Value);
-                this.Description = stringCache.Get(this.CreateDescription(match));
-            }
+            this.SourceProperty = stringCache.Get(match.Groups[nameof(this.SourceProperty)].Value);
+            this.SourcePropertyType = stringCache.Get(match.Groups[nameof(this.SourcePropertyType)].Value);
+            this.SourcePropertyName = stringCache.Get(match.Groups[nameof(this.SourcePropertyName)].Value);
+            this.BindingPath = stringCache.Get(match.Groups[nameof(this.BindingPath)].Value);
+            this.DataItemType = stringCache.Get(match.Groups[nameof(this.DataItemType)].Value);
+            this.DataItemName = stringCache.Get(match.Groups[nameof(this.DataItemName)].Value);
+            this.DataValue = stringCache.Get(match.Groups[nameof(this.DataValue)].Value);
+            this.TargetElementType = stringCache.Get(match.Groups[nameof(this.TargetElementType)].Value);
+            this.TargetElementName = stringCache.Get(match.Groups[nameof(this.TargetElementName)].Value);
+            this.TargetProperty = stringCache.Get(match.Groups[nameof(this.TargetProperty)].Value);
+            this.TargetPropertyType = stringCache.Get(match.Groups[nameof(this.TargetPropertyType)].Value);
+            this.Description = stringCache.Get(this.CreateDescription(match));
         }
 
-        public BindingEntry(int code, string description, StringCache stringCache)
+        public WpfEntry(WpfTraceInfo info, string description, StringCache stringCache)
         {
             this.stringCache = stringCache;
-            this.Code = code;
+            this.Info = info;
             this.Count = 1;
 
             this.Description = stringCache.Get(description);
@@ -103,30 +84,35 @@ namespace XamlBinding.ToolWindow.Entries
 
         private string CreateDescription(Match match)
         {
-            string text;
+            string text = null;
 
-            switch (this.Code)
+            switch (this.Info.Category)
             {
-                case ErrorCodes.CannotCreateDefaultValueConverter:
-                    text = string.Format(CultureInfo.CurrentCulture, Resource.Description_CannotCreateDefaultValueConverter,
-                        match.Groups[BindingEntry.SourceFullType].Value,
-                        match.Groups[BindingEntry.TargetFullType].Value);
+                case WpfTraceCategory.Data:
+                    switch (this.Info.Code)
+                    {
+                        case WpfTraceCode.BadValueAtTransfer:
+                            text = string.Format(CultureInfo.CurrentCulture, Resource.Description_BadValueAtTransfer, this.DataValue, this.TargetText);
+                            break;
+
+                        case WpfTraceCode.CannotCreateDefaultValueConverter:
+                            text = string.Format(CultureInfo.CurrentCulture,
+                                Resource.Description_CannotCreateDefaultValueConverter,
+                                match.Groups[WpfEntry.SourceFullType].Value,
+                                match.Groups[WpfEntry.TargetFullType].Value);
+                            break;
+
+                        case WpfTraceCode.ClrReplaceItem:
+                            text = string.Format(CultureInfo.CurrentCulture, Resource.Description_ClrReplaceItem, this.SourceProperty, this.SourcePropertyType);
+                            break;
+                    }
                     break;
 
-                case ErrorCodes.BadValueAtTransfer:
-                    text = string.Format(CultureInfo.CurrentCulture, Resource.Description_BadValueAtTransfer, this.DataValue, this.TargetText);
-                    break;
-
-                case ErrorCodes.ClrReplaceItem:
-                    text = string.Format(CultureInfo.CurrentCulture, Resource.Description_ClrReplaceItem, this.SourceProperty, this.SourcePropertyType);
-                    break;
-
-                default:
-                    text = match.Value;
+                case WpfTraceCategory.ResourceDictionary:
                     break;
             }
 
-            return text;
+            return !string.IsNullOrEmpty(text) ? text : match.Value;
         }
 
         private string TargetText => !string.IsNullOrEmpty(this.TargetProperty)
@@ -156,7 +142,7 @@ namespace XamlBinding.ToolWindow.Entries
                 sb.AppendLine(this.TargetProperty);
                 sb.AppendLine(this.TargetPropertyType);
 
-                this.hashCode = this.Code.GetHashCode() ^ sb.ToString().GetHashCode();
+                this.hashCode = this.Info.GetHashCode() ^ sb.ToString().GetHashCode();
             }
 
             return this.hashCode;
@@ -164,12 +150,12 @@ namespace XamlBinding.ToolWindow.Entries
 
         public override bool Equals(object obj)
         {
-            return obj is BindingEntry other && this.Equals(other);
+            return obj is WpfEntry other && this.Equals(other);
         }
 
-        public bool Equals(BindingEntry other)
+        public bool Equals(WpfEntry other)
         {
-            return this.Code == other.Code &&
+            return this.Info == other.Info &&
                 this.SourceProperty == other.SourceProperty &&
                 this.SourcePropertyType == other.SourcePropertyType &&
                 this.SourcePropertyName == other.SourcePropertyName &&
@@ -188,11 +174,11 @@ namespace XamlBinding.ToolWindow.Entries
             switch (keyName)
             {
                 case StandardTableKeyNames.ErrorSeverity:
-                    content = __VSERRORCATEGORY.EC_ERROR;
+                    content = this.Info.Severity.ToVsErrorCategory();
                     break;
 
                 case ColumnNames.Code:
-                    content = this.Code;
+                    content = this.Info;
                     break;
 
                 case ColumnNames.Count:
@@ -244,7 +230,7 @@ namespace XamlBinding.ToolWindow.Entries
             switch (columnName)
             {
                 case ColumnNames.Code:
-                    content = this.stringCache.Get(this.Code);
+                    content = this.stringCache.Get(this.Info.ToString());
                     break;
 
                 case ColumnNames.Count:
