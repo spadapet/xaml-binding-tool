@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="XamlBinding.d5a90345-160e-4acf-9d03-dab75334eb26" Version="1.13" Language="en-US" Publisher="Peter Spada" />
+        <Identity Id="XamlBinding.d5a90345-160e-4acf-9d03-dab75334eb26" Version="1.14" Language="en-US" Publisher="Peter Spada" />
         <DisplayName>XAML Binding Debug Output</DisplayName>
         <Description xml:space="preserve">Provides a tool window that shows XAML binding failures while debugging. The tool window makes it much easier to detect and understand the binding failures in your XAML that would normally be hidden in the output window.</Description>
         <MoreInfo>https://github.com/spadapet/xaml-binding-tool</MoreInfo>
