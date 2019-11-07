@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using XamlBinding.Package;
 
 namespace XamlBinding.Utility
 {
@@ -13,14 +14,14 @@ namespace XamlBinding.Utility
     /// </summary>
     internal sealed class Telemetry : IDisposable
     {
-        private readonly SolutionOptions options;
+        private readonly SolutionOptions solutionOptions;
         private readonly TelemetryConfiguration config;
         private readonly TelemetryClient client;
         private bool disposed;
 
-        public Telemetry(SolutionOptions options)
+        public Telemetry(IOptions options, SolutionOptions solutionOptions)
         {
-            this.options = options;
+            this.solutionOptions = solutionOptions;
 
             try
             {
@@ -32,9 +33,10 @@ namespace XamlBinding.Utility
                 this.client.Context.Cloud.RoleInstance = "null";
                 this.client.Context.Component.Version = this.GetType().Assembly.GetName().Version.ToString();
                 this.client.Context.Session.Id = Guid.NewGuid().ToString();
-                this.client.Context.User.Id = this.GetUserId();
+                this.client.Context.User.Id = options.UserId.ToString();
+                this.client.Context.Properties[Constants.PropertySolutionId] = this.GetSolutionId();
 
-                this.options.PropertyChanged += this.OnOptionChanged;
+                this.solutionOptions.PropertyChanged += this.OnSolutionOptionChanged;
             }
             catch
             {
@@ -49,27 +51,27 @@ namespace XamlBinding.Utility
             {
                 this.disposed = true;
 
-                this.options.PropertyChanged -= this.OnOptionChanged;
+                this.solutionOptions.PropertyChanged -= this.OnSolutionOptionChanged;
 
                 this.client.Flush();
                 this.config.Dispose();
             }
         }
 
-        private string GetUserId()
+        private string GetSolutionId()
         {
-            if (!this.options.TryGet(Constants.OptionSolutionId, out Guid id))
+            if (!this.solutionOptions.TryGet(Constants.OptionSolutionId, out Guid id))
             {
                 id = Guid.NewGuid();
-                this.options.Set(Constants.OptionSolutionId, id);
+                this.solutionOptions.Set(Constants.OptionSolutionId, id);
             }
 
             return id.ToString();
         }
 
-        private void OnOptionChanged(object sender, PropertyChangedEventArgs args)
+        private void OnSolutionOptionChanged(object sender, PropertyChangedEventArgs args)
         {
-            this.client.Context.User.Id = this.GetUserId();
+            this.client.Context.Properties[Constants.PropertySolutionId] = this.GetSolutionId();
         }
 
         public void TrackEvent(string eventName, IEnumerable<KeyValuePair<string, object>> properties = null)

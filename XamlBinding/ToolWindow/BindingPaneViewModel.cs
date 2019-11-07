@@ -107,7 +107,7 @@ namespace XamlBinding.ToolWindow
             this.stringCache.Clear();
         }
 
-        public void AddEntry(ITableEntry entry)
+        public bool AddEntry(ITableEntry entry)
         {
             ICountedTableEntry countedEntry = entry as ICountedTableEntry;
 
@@ -123,6 +123,8 @@ namespace XamlBinding.ToolWindow
                     // Tell the table that this entry has been updated
                     this.entries[i] = existingCountedEntry;
                 }
+
+                return false;
             }
             else
             {
@@ -132,15 +134,24 @@ namespace XamlBinding.ToolWindow
                 }
 
                 this.entries.Add(entry);
+
+                return true;
             }
         }
 
-        public void AddEntries(IEnumerable<ITableEntry> entries)
+        public bool AddEntries(IEnumerable<ITableEntry> entries)
         {
+            bool addedNew = false;
+
             foreach (ITableEntry entry in entries)
             {
-                this.AddEntry(entry);
+                if (this.AddEntry(entry))
+                {
+                    addedNew = true;
+                }
             }
+
+            return addedNew;
         }
 
         public string TraceLevel

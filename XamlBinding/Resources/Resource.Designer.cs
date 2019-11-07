@@ -61,6 +61,15 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to XAML Binding Failures.
+        /// </summary>
+        public static string _100 {
+            get {
+                return ResourceManager.GetString("100", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0}.{1}, type={2}.
         /// </summary>
         public static string BindingEntry_TargetText {
@@ -147,6 +156,69 @@ namespace XamlBinding.Resources {
         public static string Header_Target {
             get {
                 return ResourceManager.GetString("Header.Target", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For new failures.
+        /// </summary>
+        public static string OptionsCategoryForNewFailures {
+            get {
+                return ResourceManager.GetString("OptionsCategoryForNewFailures", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flash the Visual Studio window whenever a failure is added to the list.
+        /// </summary>
+        public static string OptionsDescriptionFlashWindow {
+            get {
+                return ResourceManager.GetString("OptionsDescriptionFlashWindow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plays a notification sound whenever a failure is added to the list.
+        /// </summary>
+        public static string OptionsDescriptionPlaySound {
+            get {
+                return ResourceManager.GetString("OptionsDescriptionPlaySound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the XAML Binding Failures tool window pane when there is a new error.
+        /// </summary>
+        public static string OptionsDescriptionShowPane {
+            get {
+                return ResourceManager.GetString("OptionsDescriptionShowPane", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flash window.
+        /// </summary>
+        public static string OptionsNameFlashWindow {
+            get {
+                return ResourceManager.GetString("OptionsNameFlashWindow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Play sound.
+        /// </summary>
+        public static string OptionsNamePlaySound {
+            get {
+                return ResourceManager.GetString("OptionsNamePlaySound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show tool window pane.
+        /// </summary>
+        public static string OptionsNameShowPane {
+            get {
+                return ResourceManager.GetString("OptionsNameShowPane", resourceCulture);
             }
         }
         

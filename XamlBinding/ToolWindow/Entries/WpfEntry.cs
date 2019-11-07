@@ -17,7 +17,7 @@ namespace XamlBinding.ToolWindow.Entries
     /// <summary>
     /// One entry in the failure list
     /// </summary>
-    internal sealed class WpfEntry : ObservableObject, IEquatable<WpfEntry>, ICountedTableEntry, IWpfTableEntry
+    internal sealed class WpfEntry : ObservableObject, IEquatable<WpfEntry>, IComparable<WpfEntry>, ICountedTableEntry, IWpfTableEntry
     {
         public WpfTraceInfo Info { get; }
         public int Count { get; private set; }
@@ -167,6 +167,11 @@ namespace XamlBinding.ToolWindow.Entries
                 this.TargetElementName == other.TargetElementName &&
                 this.TargetProperty == other.TargetProperty &&
                 this.TargetPropertyType == other.TargetPropertyType;
+        }
+
+        public int CompareTo(WpfEntry other)
+        {
+            return 0;
         }
 
         bool ITableEntry.TryGetValue(string keyName, out object content)

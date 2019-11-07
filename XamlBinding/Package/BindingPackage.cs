@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.ComponentModel.Design;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,12 +22,14 @@ namespace XamlBinding.Package
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(BindingPane), Window = Constants.CallStackWindowString, Orientation = ToolWindowOrientation.Bottom, Style = VsDockStyle.Tabbed)]
     [ProvideToolWindowVisibility(typeof(BindingPane), Constants.ShowBindingPaneContextString)]
+    [ProvideOptionPage(typeof(BindingOptions), "Debugger", "XamlBinding", 0, 100, true)]
     [Guid(Constants.BindingPackageString)]
     internal sealed class BindingPackage : AsyncPackage
     {
         public Telemetry Telemetry { get; private set; }
+        public IOptions Options { get; private set; }
 
-        private SolutionOptions options;
+        private SolutionOptions solutionOptions;
 
         public static BindingPackage Get(IServiceProvider serviceProvider)
         {
@@ -47,10 +50,11 @@ namespace XamlBinding.Package
         {
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-            this.options = new SolutionOptions();
+            this.solutionOptions = new SolutionOptions();
             this.AddOptionKey(Constants.SolutionOptionKey);
 
-            this.Telemetry = new Telemetry(this.options);
+            this.Options = (IOptions)this.GetDialogPage(typeof(BindingOptions));
+            this.Telemetry = new Telemetry(this.Options, this.solutionOptions);
             this.Telemetry.TrackEvent(Constants.EventInitializePackage);
 
             await this.InitMenuCommandsAsync();
@@ -113,7 +117,7 @@ namespace XamlBinding.Package
 
             if (key == Constants.SolutionOptionKey && stream != null)
             {
-                this.options.Load(stream);
+                this.solutionOptions.Load(stream);
             }
         }
 
@@ -121,17 +125,17 @@ namespace XamlBinding.Package
         {
             if (key == Constants.SolutionOptionKey && stream != null)
             {
-                this.options.Save(stream);
+                this.solutionOptions.Save(stream);
             }
 
             base.OnSaveOptions(key, stream);
         }
 
-        private void ShowBindingPane()
+        public void ShowBindingPane(bool create = true)
         {
             this.JoinableTaskFactory.RunAsync(async delegate
             {
-                await this.ShowToolWindowAsync(typeof(BindingPane), 0, true, this.DisposalToken);
+                await this.ShowToolWindowAsync(typeof(BindingPane), 0, create, this.DisposalToken);
             }).FileAndForget(Constants.VsBindingPaneFeaturePrefix + nameof(this.ShowBindingPane));
         }
     }

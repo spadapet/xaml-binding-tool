@@ -10,8 +10,10 @@ namespace XamlBinding
         public readonly static bool IsXamlDesigner = DesignerProperties.GetIsInDesignMode(new DependencyObject());
 
         // Registry
+        public const string UserSettingsKey = @"XamlBinding\Settings";
         public const string DataBindingTraceKey = @"Debugger\Tracing\WPF.DataBinding";
         public const string DataBindingTraceLevel = "Level";
+        public const string UserIdValue = @"UserId";
 
         // COM
         public const int S_OK = 0;
@@ -73,11 +75,13 @@ namespace XamlBinding
         public const string PropertyErrorCodes = "ErrorCodes";
         public const string PropertyExpandedEntryCount = "ExpandedEntryCount";
         public const string PropertyFocused = "Focused";
+        public const string PropertySolutionId = "SolutionId";
         public const string PropertyTraceLevel = "TraceLevel";
 
         // GUIDs
         public const string ApplicationInsightsInstrumentationKeyString = "CA03211C-F990-4E39-A24E-FF5CDC946D9B";
         public const string BindingPackageString = "08F93EBA-7555-4CCB-9CEA-82925FCBE8FF";
+        public const string BindingOptionsString = "C828BD8A-8C73-48CE-B9DF-63CB8AF909C4";
         public const string BindingPaneString = "DCCA5C53-7A37-4F9B-BE15-E1063D061497";
         public const string ShowBindingPaneContextString = "C8272E21-A17A-429F-8BEF-325C6D1E8462";
         public const string CallStackWindowString = "34E76E81-EE4A-11D0-AE2E-00A0C90FFFC3";

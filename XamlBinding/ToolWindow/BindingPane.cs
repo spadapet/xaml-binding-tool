@@ -10,6 +10,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Media;
 using System.Runtime.InteropServices;
 using System.Threading;
 using XamlBinding.Package;
@@ -45,6 +46,7 @@ namespace XamlBinding.ToolWindow
         private IVsDebugger debuggerForCookie;
         private uint frameCookie;
         private uint debugCookie;
+        private DateTime lastTimeSoundPlayed;
 
         public BindingPane(BindingPackage package)
             : base(null)
@@ -285,8 +287,42 @@ namespace XamlBinding.ToolWindow
                 this.package.JoinableTaskFactory.RunAsync(async delegate
                 {
                     await this.package.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    this.viewModel.AddEntries(entries);
+
+                    if (this.viewModel.AddEntries(entries))
+                    {
+                        this.NotifyUserAboutNewEntries();
+                    }
                 }).FileAndForget(Constants.VsBindingPaneFeaturePrefix + nameof(this.ProcessOutput));
+            }
+        }
+
+        private void NotifyUserAboutNewEntries()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            DateTime now = DateTime.UtcNow;
+            if (this.lastTimeSoundPlayed == default || (now - this.lastTimeSoundPlayed) >= TimeSpan.FromSeconds(2))
+            {
+                this.lastTimeSoundPlayed = now;
+
+                if (this.package.Options.FlashWindowOnError)
+                {
+                    IVsUIShell shell = this.package.GetService<SVsUIShell, IVsUIShell>();
+                    if (ErrorHandler.Succeeded(shell.GetDialogOwnerHwnd(out IntPtr hwnd)) && hwnd != IntPtr.Zero)
+                    {
+                        NativeMethods.FlashWindow(hwnd, true, true);
+                    }
+                }
+
+                if (this.package.Options.ShowPaneOnError)
+                {
+                    this.package.ShowBindingPane();
+                }
+
+                if (this.package.Options.PlaySoundOnError)
+                {
+                    SystemSounds.Beep.Play();
+                }
             }
         }
 

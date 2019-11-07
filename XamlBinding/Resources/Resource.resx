@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="100" xml:space="preserve">
+    <value>XAML Binding Failures</value>
+    <comment>Tools options name</comment>
+  </data>
   <data name="BindingEntry.TargetText" xml:space="preserve">
     <value>{0}.{1}, type={2}</value>
   </data>
@@ -146,6 +150,27 @@
   </data>
   <data name="Header.Target" xml:space="preserve">
     <value>Target</value>
+  </data>
+  <data name="OptionsCategoryForNewFailures" xml:space="preserve">
+    <value>For new failures</value>
+  </data>
+  <data name="OptionsDescriptionFlashWindow" xml:space="preserve">
+    <value>Flash the Visual Studio window whenever a failure is added to the list</value>
+  </data>
+  <data name="OptionsDescriptionPlaySound" xml:space="preserve">
+    <value>Plays a notification sound whenever a failure is added to the list</value>
+  </data>
+  <data name="OptionsDescriptionShowPane" xml:space="preserve">
+    <value>Shows the XAML Binding Failures tool window pane when there is a new error</value>
+  </data>
+  <data name="OptionsNameFlashWindow" xml:space="preserve">
+    <value>Flash window</value>
+  </data>
+  <data name="OptionsNamePlaySound" xml:space="preserve">
+    <value>Play sound</value>
+  </data>
+  <data name="OptionsNameShowPane" xml:space="preserve">
+    <value>Show tool window pane</value>
   </data>
   <data name="ToolWindow.Title" xml:space="preserve">
     <value>XAML Binding Failures</value>
