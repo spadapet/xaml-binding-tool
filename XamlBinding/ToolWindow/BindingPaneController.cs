@@ -43,14 +43,14 @@ namespace XamlBinding.ToolWindow
 
             this.traceLevels = new string[]
             {
-                nameof(WpfTraceLevel.Off),
-                nameof(WpfTraceLevel.Critical),
-                nameof(WpfTraceLevel.Error),
-                nameof(WpfTraceLevel.Warning),
-                nameof(WpfTraceLevel.Information),
-                nameof(WpfTraceLevel.Verbose),
-                nameof(WpfTraceLevel.Activity),
-                nameof(WpfTraceLevel.All),
+                nameof(SourceLevels.Off),
+                nameof(SourceLevels.Critical),
+                nameof(SourceLevels.Error),
+                nameof(SourceLevels.Warning),
+                nameof(SourceLevels.Information),
+                nameof(SourceLevels.Verbose),
+                nameof(SourceLevels.ActivityTracing),
+                nameof(SourceLevels.All),
             };
         }
 
@@ -208,7 +208,11 @@ namespace XamlBinding.ToolWindow
 
             if (pvaOut != IntPtr.Zero)
             {
-                Marshal.GetNativeVariantForObject(this.viewModel.TraceLevel, pvaOut);
+                int i = Array.IndexOf(this.traceLevels, this.viewModel.TraceLevel);
+                if (i >= 0)
+                {
+                    Marshal.GetNativeVariantForObject(this.traceLevelDisplayNames[i], pvaOut);
+                }
             }
             else if (pvaIn != IntPtr.Zero && Marshal.GetObjectForNativeVariant(pvaIn) is string newValue)
             {
@@ -224,6 +228,7 @@ namespace XamlBinding.ToolWindow
                     using (RegistryKey rootKey = VSRegistry.RegistryRoot(this.serviceProvider, __VsLocalRegistryType.RegType_UserSettings, writable: true))
                     using (RegistryKey dataBindingOutputLevelKey = rootKey.CreateSubKey(Constants.DataBindingTraceKey, writable: true))
                     {
+                        this.viewModel.TraceLevel = this.traceLevels[i];
                         dataBindingOutputLevelKey?.SetValue(Constants.DataBindingTraceLevel, this.traceLevels[i], RegistryValueKind.String);
                     }
                 }

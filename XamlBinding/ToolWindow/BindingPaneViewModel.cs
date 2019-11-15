@@ -35,7 +35,7 @@ namespace XamlBinding.ToolWindow
             this.countedEntries = new HashSet<ICountedTableEntry>(new CountedTableEntryComparer());
             this.entries = new ObservableCollection<ITableEntry>();
             this.entries.CollectionChanged += this.OnEntryCollectionChanged;
-            this.traceLevel = nameof(Parser.WpfTraceLevel.Error);
+            this.traceLevel = nameof(SourceLevels.Error);
         }
 
         public void Dispose()
@@ -157,7 +157,7 @@ namespace XamlBinding.ToolWindow
         public string TraceLevel
         {
             get => this.traceLevel;
-            set => this.SetProperty(ref this.traceLevel, value ?? nameof(Parser.WpfTraceLevel.Error));
+            set => this.SetProperty(ref this.traceLevel, value ?? nameof(SourceLevels.Error));
         }
 
         public bool IsDebugging

@@ -62,7 +62,6 @@
     </Compile>
     <Compile Include="Parser\IOutputParser.cs" />
     <Compile Include="Parser\WpfOutputParser.cs" />
-    <Compile Include="Parser\WpfTraceLevel.cs" />
     <Compile Include="ToolWindow\BindingPane.cs" />
     <Compile Include="ToolWindow\BindingPaneControl.xaml.cs">
       <DependentUpon>BindingPaneControl.xaml</DependentUpon>

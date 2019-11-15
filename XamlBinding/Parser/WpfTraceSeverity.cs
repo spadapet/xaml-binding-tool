@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.Shell.Interop;
+using System.Diagnostics;
 
 namespace XamlBinding.Parser
 {
@@ -17,12 +18,12 @@ namespace XamlBinding.Parser
 
             switch (text ?? string.Empty)
             {
-                case nameof(WpfTraceLevel.Warning):
+                case nameof(SourceLevels.Warning):
                     severity = WpfTraceSeverity.Warning;
                     break;
 
-                case nameof(WpfTraceLevel.Critical):
-                case nameof(WpfTraceLevel.Error):
+                case nameof(SourceLevels.Critical):
+                case nameof(SourceLevels.Error):
                     severity = WpfTraceSeverity.Error;
                     break;
             }
