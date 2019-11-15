@@ -17,7 +17,7 @@ namespace XamlBinding.ToolWindow.Entries
     /// <summary>
     /// One entry in the failure list
     /// </summary>
-    internal sealed class WpfEntry : ObservableObject, IEquatable<WpfEntry>, IComparable<WpfEntry>, ICountedTableEntry, IWpfTableEntry
+    internal sealed class WpfEntry : ObservableObject, IEquatable<WpfEntry>, ICountedTableEntry, IWpfTableEntry
     {
         public WpfTraceInfo Info { get; }
         public int Count { get; private set; }
@@ -68,7 +68,6 @@ namespace XamlBinding.ToolWindow.Entries
             this.Info = info;
             this.Count = 1;
 
-            this.Description = stringCache.Get(description);
             this.SourceProperty = string.Empty;
             this.SourcePropertyType = string.Empty;
             this.SourcePropertyName = string.Empty;
@@ -80,6 +79,7 @@ namespace XamlBinding.ToolWindow.Entries
             this.TargetElementName = string.Empty;
             this.TargetProperty = string.Empty;
             this.TargetPropertyType = string.Empty;
+            this.Description = stringCache.Get(description);
         }
 
         private string CreateDescription(Match match)
@@ -141,6 +141,7 @@ namespace XamlBinding.ToolWindow.Entries
                 sb.AppendLine(this.TargetElementName);
                 sb.AppendLine(this.TargetProperty);
                 sb.AppendLine(this.TargetPropertyType);
+                sb.AppendLine(this.Description);
 
                 this.hashCode = this.Info.GetHashCode() ^ sb.ToString().GetHashCode();
             }
@@ -166,12 +167,8 @@ namespace XamlBinding.ToolWindow.Entries
                 this.TargetElementType == other.TargetElementType &&
                 this.TargetElementName == other.TargetElementName &&
                 this.TargetProperty == other.TargetProperty &&
-                this.TargetPropertyType == other.TargetPropertyType;
-        }
-
-        public int CompareTo(WpfEntry other)
-        {
-            return 0;
+                this.TargetPropertyType == other.TargetPropertyType &&
+                this.Description == other.Description;
         }
 
         bool ITableEntry.TryGetValue(string keyName, out object content)
