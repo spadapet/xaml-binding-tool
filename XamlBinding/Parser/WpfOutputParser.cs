@@ -34,7 +34,7 @@ namespace XamlBinding.Parser
             // 1
             Regex regexCannotCreateDefaultValueConverter = new Regex($@"Cannot create default converter to perform '(one-way|two-way)' conversions between types '(?<{WpfEntry.SourceFullType}>.+?)' and '(?<{WpfEntry.TargetFullType}>.+?)'. Consider using Converter property of Binding. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions);
             // 5
-            Regex regexBadValueAtTransfer = new Regex($@"Value produced by BindingExpression is not valid for target property.; Value='(?<DataValue>.+?)' {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions);
+            Regex regexBadValueAtTransfer = new Regex($@"Value produced by BindingExpression is not valid for target property.((; Value=)| (?<DataValueType>.+?):)'(?<DataValue>.+?)' {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions);
             // 40
             Regex regexClrReplaceItem = new Regex($@"BindingExpression path error: '(?<{nameof(WpfEntry.SourceProperty)}>.+?)' property not found on '(object|current item of collection)' '{WpfOutputParser.CaptureItem(nameof(WpfEntry.SourcePropertyType), nameof(WpfEntry.SourcePropertyName))}'. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions);
 

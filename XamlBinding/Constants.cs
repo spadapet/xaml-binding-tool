@@ -62,6 +62,7 @@ namespace XamlBinding
         public const string EventHidePane = "HidePane";
         public const string EventInitializePackage = "InitializePackage";
         public const string EventInitializePane = "InitializePane";
+        public const string EventNewEntry = "NewEntry";
         public const string EventFocusChanged = "FocusChanged";
         public const string EventProvideFeedback = "ProvideFeedback";
         public const string EventShowContextMenu = "ShowContextMenu";
@@ -72,6 +73,7 @@ namespace XamlBinding
         // Telemetry properties
         public const string PropertyColumnValue = "ColumnValue";
         public const string PropertyEntryCount = "EntryCount";
+        public const string PropertyErrorCode = "ErrorCode";
         public const string PropertyErrorCodes = "ErrorCodes";
         public const string PropertyExpandedEntryCount = "ExpandedEntryCount";
         public const string PropertyFocused = "Focused";

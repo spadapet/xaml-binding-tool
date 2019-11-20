@@ -135,6 +135,14 @@ namespace XamlBinding.ToolWindow
 
                 this.entries.Add(entry);
 
+                if (entry is IWpfTableEntry wpfEntry && wpfEntry.TryCreateStringContent(ColumnNames.Code, false, false, out string code) && !string.IsNullOrEmpty(code))
+                {
+                    this.Telemetry.TrackEvent(Constants.EventNewEntry, new Dictionary<string, object>()
+                    {
+                        { Constants.PropertyErrorCode, code },
+                    });
+                }
+
                 return true;
             }
         }

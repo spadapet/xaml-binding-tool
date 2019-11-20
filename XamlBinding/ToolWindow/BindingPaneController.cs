@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
-using XamlBinding.Parser;
 using XamlBinding.Resources;
 using XamlBinding.ToolWindow.Columns;
 using IServiceProvider = System.IServiceProvider;
@@ -187,7 +186,7 @@ namespace XamlBinding.ToolWindow
 
         private void OnProvideFeedback()
         {
-            this.viewModel.Telemetry.TrackEvent(Constants.EventShowTraceOptions);
+            this.viewModel.Telemetry.TrackEvent(Constants.EventProvideFeedback);
 
             try
             {
