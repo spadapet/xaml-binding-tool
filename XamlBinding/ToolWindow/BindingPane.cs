@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.TableManager;
@@ -32,7 +33,7 @@ namespace XamlBinding.ToolWindow
         , IVsWindowFrameNotify2
     {
         private readonly BindingPackage package;
-        private readonly IOutputParser outputParser;
+        private readonly List<IOutputParser> outputParsers;
         private readonly BindingPaneViewModel viewModel;
         private readonly BindingPaneControl control;
         private readonly BindingPaneController controller;
@@ -51,11 +52,9 @@ namespace XamlBinding.ToolWindow
         public BindingPane(BindingPackage package)
             : base(null)
         {
-            StringCache stringCache = new StringCache();
-
             this.package = package;
-            this.outputParser = new WpfOutputParser(stringCache);
-            this.viewModel = new BindingPaneViewModel(package.Telemetry, stringCache);
+            this.outputParsers = new List<IOutputParser>();
+            this.viewModel = new BindingPaneViewModel(package.Telemetry, this.outputParsers);
             this.control = new BindingPaneControl(this.package, this.viewModel);
             this.controller = new BindingPaneController(package, this.viewModel, this.control.TableControl);
             this.cancellationTokenSource = new CancellationTokenSource();
@@ -82,6 +81,7 @@ namespace XamlBinding.ToolWindow
                 this.dataBindingOutputLevelKey = rootKey.CreateSubKey(Constants.DataBindingTraceKey, writable: true);
             }
 
+            this.GetOutputParsers();
             this.HookDataBindingTraceLevel();
             this.HookDebugEvents();
             this.WaitForDebugOutputTextBuffer();
@@ -176,6 +176,29 @@ namespace XamlBinding.ToolWindow
             }
 
             base.OnToolWindowCreated();
+        }
+
+        /// <summary>
+        /// Should be done on demand rather than during init
+        /// </summary>
+        private void GetOutputParsers()
+        {
+            IComponentModel componentModel = this.GetService<SComponentModel, IComponentModel>();
+            foreach (IOutputParserProvider provider in componentModel.GetExtensions<IOutputParserProvider>())
+            {
+                try
+                {
+                    IOutputParser outputParser = provider.GetOutputParser();
+                    if (outputParser != null)
+                    {
+                        this.outputParsers.Add(outputParser);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.package.Telemetry.TrackException(ex);
+                }
+            }
         }
 
         /// <summary>
@@ -280,15 +303,34 @@ namespace XamlBinding.ToolWindow
             int textStart = startPoint.GetPosition(snapshot);
             int textLength = endPoint.GetPoint(snapshot) - startPoint.GetPoint(snapshot);
             string text = snapshot.GetText(textStart, textLength);
-            IReadOnlyList<ITableEntry> entries = this.outputParser.ParseOutput(text);
+            List<IReadOnlyList<ITableEntry>> allEntries = new List<IReadOnlyList<ITableEntry>>(this.outputParsers.Count);
 
-            if (entries.Count > 0)
+            foreach (IOutputParser outputParser in this.outputParsers)
+            {
+                IReadOnlyList<ITableEntry> entries = outputParser.ParseOutput(text);
+                if (entries.Count > 0)
+                {
+                    allEntries.Add(entries);
+                }
+            }
+
+            if (allEntries.Count > 0)
             {
                 this.package.JoinableTaskFactory.RunAsync(async delegate
                 {
                     await this.package.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                    if (this.viewModel.AddEntries(entries))
+                    bool added = false;
+
+                    foreach (IReadOnlyList<ITableEntry> entries in allEntries)
+                    {
+                        if (this.viewModel.AddEntries(entries))
+                        {
+                            added = true;
+                        }
+                    }
+
+                    if (added)
                     {
                         this.NotifyUserAboutNewEntries();
                     }

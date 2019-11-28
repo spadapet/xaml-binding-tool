@@ -6,5 +6,6 @@ namespace XamlBinding.Parser
     internal interface IOutputParser
     {
         IReadOnlyList<ITableEntry> ParseOutput(string text);
+        void EntriesCleared();
     }
 }

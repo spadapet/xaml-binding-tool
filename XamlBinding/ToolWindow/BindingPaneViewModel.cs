@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
+using XamlBinding.Parser;
 using XamlBinding.ToolWindow.Columns;
 using XamlBinding.ToolWindow.Entries;
 using XamlBinding.Utility;
@@ -22,16 +23,16 @@ namespace XamlBinding.ToolWindow
         public IReadOnlyList<ITableEntry> Entries => this.entries;
         public bool CanClearEntries => this.entries.Count > 0;
 
-        private readonly StringCache stringCache;
         private readonly ObservableCollection<ITableEntry> entries;
         private readonly HashSet<ICountedTableEntry> countedEntries;
+        private readonly IEnumerable<IOutputParser> outputParsers;
         private string traceLevel;
         private bool isDebugging;
 
-        public BindingPaneViewModel(Telemetry telemetry, StringCache stringCache)
+        public BindingPaneViewModel(Telemetry telemetry, IEnumerable<IOutputParser> outputParsers)
         {
             this.Telemetry = telemetry;
-            this.stringCache = stringCache;
+            this.outputParsers = outputParsers;
             this.countedEntries = new HashSet<ICountedTableEntry>(new CountedTableEntryComparer());
             this.entries = new ObservableCollection<ITableEntry>();
             this.entries.CollectionChanged += this.OnEntryCollectionChanged;
@@ -104,7 +105,11 @@ namespace XamlBinding.ToolWindow
         {
             this.countedEntries.Clear();
             this.entries.Clear();
-            this.stringCache.Clear();
+
+            foreach (IOutputParser outputParser in this.outputParsers)
+            {
+                outputParser.EntriesCleared();
+            }
         }
 
         public bool AddEntry(ITableEntry entry)

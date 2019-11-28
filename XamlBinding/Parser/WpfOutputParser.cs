@@ -22,9 +22,9 @@ namespace XamlBinding.Parser
         private const string CaptureCode = "code";
         private const string CaptureText = "text";
 
-        public WpfOutputParser(StringCache stringCache)
+        public WpfOutputParser()
         {
-            this.stringCache = stringCache;
+            this.stringCache = new StringCache();
 
             const RegexOptions overallRegexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline | RegexOptions.Multiline;
             const RegexOptions lineRegexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture;
@@ -46,7 +46,7 @@ namespace XamlBinding.Parser
             };
         }
 
-        public IReadOnlyList<ITableEntry> ParseOutput(string text)
+        IReadOnlyList<ITableEntry> IOutputParser.ParseOutput(string text)
         {
             MatchCollection matches = this.processTextRegex.Matches(text);
             if (matches.Count == 0)
@@ -65,6 +65,11 @@ namespace XamlBinding.Parser
             }
 
             return entries;
+        }
+
+        void IOutputParser.EntriesCleared()
+        {
+            this.stringCache.Clear();
         }
 
         private ITableEntry ProcessLine(Match match)

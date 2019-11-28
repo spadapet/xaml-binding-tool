@@ -50,6 +50,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Package\IOptions.cs" />
+    <Compile Include="Parser\IOutputParserProvider.cs" />
+    <Compile Include="Parser\WpfOutputParserProvider.cs" />
     <Compile Include="Parser\WpfTraceInfo.cs" />
     <Compile Include="Parser\WpfTraceCode.cs" />
     <Compile Include="Parser\WpfTraceSeverity.cs" />
