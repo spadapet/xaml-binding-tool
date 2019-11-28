@@ -92,7 +92,7 @@ namespace XamlBinding.ToolWindow.Entries
                     switch (this.Info.Code)
                     {
                         case WpfTraceCode.BadValueAtTransfer:
-                            text = string.Format(CultureInfo.CurrentCulture, Resource.Description_BadValueAtTransfer, this.DataValue, this.TargetText);
+                            text = string.Format(CultureInfo.CurrentCulture, Resource.Description_BadValueAtTransfer, this.DataValue, this.TargetText, this.TargetPropertyType);
                             break;
 
                         case WpfTraceCode.CannotCreateDefaultValueConverter:
@@ -115,9 +115,7 @@ namespace XamlBinding.ToolWindow.Entries
             return !string.IsNullOrEmpty(text) ? text : match.Value;
         }
 
-        private string TargetText => !string.IsNullOrEmpty(this.TargetProperty)
-            ? this.stringCache.Get(string.Format(CultureInfo.CurrentCulture, Resource.BindingEntry_TargetText, this.TargetElementType, this.TargetProperty, this.TargetPropertyType))
-            : string.Empty;
+        private string TargetText => !string.IsNullOrEmpty(this.TargetProperty) ? $"{this.TargetElementType}.{this.TargetProperty}" : string.Empty;
 
         public void AddCount(int count = 1)
         {
@@ -203,6 +201,10 @@ namespace XamlBinding.ToolWindow.Entries
                     content = this.TargetText;
                     break;
 
+                case ColumnNames.TargetType:
+                    content = this.TargetPropertyType;
+                    break;
+
                 default:
                     content = null;
                     return false;
@@ -278,6 +280,7 @@ namespace XamlBinding.ToolWindow.Entries
                 case ColumnNames.DataContextType:
                 case ColumnNames.Description:
                 case ColumnNames.Target:
+                case ColumnNames.TargetType:
                     if (this.TryGetValue(columnName, out string stringContent) && !string.IsNullOrEmpty(stringContent))
                     {
                         toolTip = stringContent;

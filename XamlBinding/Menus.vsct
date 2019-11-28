@@ -95,6 +95,13 @@
                     <ButtonText>Copy Target</ButtonText>
                 </Strings>
             </Button>
+            <Button guid="guidBindingPaneCmdSet" id="CopyTargetTypeId" priority="0x0104" type="Button">
+                <Parent guid="guidBindingPaneCmdSet" id="ContextMenuCopyGroup" />
+                <CommandFlag>TextOnly</CommandFlag>
+                <Strings>
+                    <ButtonText>Copy Target Type</ButtonText>
+                </Strings>
+            </Button>
         </Buttons>
         <Combos>
             <Combo guid="guidBindingPaneCmdSet" id="TraceLevelDropDownId" priority="0x0101" type="DropDownCombo" defaultWidth="90" idCommandList="TraceLevelDropDownListId">
@@ -148,6 +155,7 @@
             <IDSymbol name="CopyDataContextId" value="0x0105" />
             <IDSymbol name="CopyBindingPathId" value="0x0106" />
             <IDSymbol name="CopyTargetId" value="0x0107" />
+            <IDSymbol name="CopyTargetTypeId" value="0x0108" />
         </GuidSymbol>
         <GuidSymbol name="guidImages" value="{2e47d056-94f1-4c81-920f-42b390524fe5}" >
             <IDSymbol name="BindingPaneCommandIcon" value="1" />

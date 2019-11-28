@@ -88,6 +88,7 @@ namespace XamlBinding.ToolWindow
                     case Constants.CopyDataContextId:
                     case Constants.CopyBindingPathId:
                     case Constants.CopyTargetId:
+                    case Constants.CopyTargetTypeId:
                         prgCmds[0].cmdf = Constants.OLECMDF_SUPPORTED_AND_ENABLED;
                         break;
 
@@ -143,6 +144,10 @@ namespace XamlBinding.ToolWindow
 
                     case Constants.CopyTargetId:
                         this.OnCopyColumnValue(ColumnNames.Target);
+                        break;
+
+                    case Constants.CopyTargetTypeId:
+                        this.OnCopyColumnValue(ColumnNames.TargetType);
                         break;
 
                     default:

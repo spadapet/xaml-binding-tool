@@ -70,16 +70,7 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}.{1}, type={2}.
-        /// </summary>
-        public static string BindingEntry_TargetText {
-            get {
-                return ResourceManager.GetString("BindingEntry.TargetText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Value &apos;{0}&apos; cannot be assigned to property {1}.
+        ///   Looks up a localized string similar to Value &apos;{0}&apos; cannot be assigned to property {1}, type={2}.
         /// </summary>
         public static string Description_BadValueAtTransfer {
             get {
@@ -156,6 +147,15 @@ namespace XamlBinding.Resources {
         public static string Header_Target {
             get {
                 return ResourceManager.GetString("Header.Target", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Target Type.
+        /// </summary>
+        public static string Header_TargetType {
+            get {
+                return ResourceManager.GetString("Header.TargetType", resourceCulture);
             }
         }
         

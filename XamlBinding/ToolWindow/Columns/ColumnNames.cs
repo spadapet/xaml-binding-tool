@@ -10,6 +10,7 @@ namespace XamlBinding.ToolWindow.Columns
         public const string DataContextType = ColumnNames.Prefix + nameof(ColumnNames.DataContextType);
         public const string Description = ColumnNames.Prefix + nameof(ColumnNames.Description);
         public const string Target = ColumnNames.Prefix + nameof(ColumnNames.Target);
+        public const string TargetType = ColumnNames.Prefix + nameof(ColumnNames.TargetType);
 
         private const string Prefix = "XamlBinding_";
 
@@ -25,6 +26,7 @@ namespace XamlBinding.ToolWindow.Columns
                     ColumnNames.DataContextType,
                     ColumnNames.BindingPath,
                     ColumnNames.Target,
+                    ColumnNames.TargetType,
                     ColumnNames.Description,
                 };
             }

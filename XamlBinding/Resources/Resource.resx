@@ -121,11 +121,8 @@
     <value>XAML Binding Failures</value>
     <comment>Tools options name</comment>
   </data>
-  <data name="BindingEntry.TargetText" xml:space="preserve">
-    <value>{0}.{1}, type={2}</value>
-  </data>
   <data name="Description.BadValueAtTransfer" xml:space="preserve">
-    <value>Value '{0}' cannot be assigned to property {1}</value>
+    <value>Value '{0}' cannot be assigned to property {1}, type={2}</value>
   </data>
   <data name="Description.CannotCreateDefaultValueConverter" xml:space="preserve">
     <value>Cannot convert from type '{0}' to '{1}'. Consider setting a converter on the binding.</value>
@@ -150,6 +147,9 @@
   </data>
   <data name="Header.Target" xml:space="preserve">
     <value>Target</value>
+  </data>
+  <data name="Header.TargetType" xml:space="preserve">
+    <value>Target Type</value>
   </data>
   <data name="OptionsCategoryForNewFailures" xml:space="preserve">
     <value>For new failures</value>

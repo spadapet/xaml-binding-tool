@@ -71,6 +71,7 @@
     <Compile Include="ToolWindow\BindingPaneController.cs" />
     <Compile Include="ToolWindow\BindingPaneViewModel.cs" />
     <Compile Include="Parser\WpfTraceCategory.cs" />
+    <Compile Include="ToolWindow\Columns\ColumnTargetType.cs" />
     <Compile Include="ToolWindow\Entries\WpfEntry.cs" />
     <Compile Include="ToolWindow\Entries\CountedTableEntryComparer.cs" />
     <Compile Include="ToolWindow\Entries\ICountedTableEntry.cs" />
