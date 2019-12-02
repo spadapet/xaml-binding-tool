@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.TableControl;
 using Microsoft.VisualStudio.Shell.TableManager;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -36,6 +37,8 @@ namespace XamlBinding.ToolWindow.Entries
 
         public const string SourceFullType = nameof(WpfEntry.SourceFullType);
         public const string TargetFullType = nameof(WpfEntry.TargetFullType);
+        public const string ExtraInfo = nameof(WpfEntry.ExtraInfo);
+        public const string ExtraInfo2 = nameof(WpfEntry.ExtraInfo2);
 
         private readonly StringCache stringCache;
         private int hashCode;
@@ -91,10 +94,6 @@ namespace XamlBinding.ToolWindow.Entries
                 case WpfTraceCategory.Data:
                     switch (this.Info.Code)
                     {
-                        case WpfTraceCode.BadValueAtTransfer:
-                            text = string.Format(CultureInfo.CurrentCulture, Resource.Description_BadValueAtTransfer, this.DataValue, this.TargetText, this.TargetPropertyType);
-                            break;
-
                         case WpfTraceCode.CannotCreateDefaultValueConverter:
                             text = string.Format(CultureInfo.CurrentCulture,
                                 Resource.Description_CannotCreateDefaultValueConverter,
@@ -102,8 +101,39 @@ namespace XamlBinding.ToolWindow.Entries
                                 match.Groups[WpfEntry.TargetFullType].Value);
                             break;
 
+                        case WpfTraceCode.NoSource:
+                            text = string.Format(CultureInfo.CurrentCulture, Resource.Description_NoSource, match.Groups[WpfEntry.ExtraInfo].Value);
+                            break;
+
+                        case WpfTraceCode.BadValueAtTransfer:
+                            text = string.Format(CultureInfo.CurrentCulture, Resource.Description_BadValueAtTransfer, this.DataValue, this.TargetText, this.TargetPropertyType);
+                            break;
+
+                        case WpfTraceCode.NoValueToTransfer:
+                            text = Resource.Description_NoValueToTransfer;
+                            break;
+
+                        case WpfTraceCode.MissingInfo:
+                            text = Resource.Description_MissingInfo;
+                            break;
+
+                        case WpfTraceCode.NullDataItem:
+                            text = Resource.Description_NullDataItem;
+                            break;
+
                         case WpfTraceCode.ClrReplaceItem:
                             text = string.Format(CultureInfo.CurrentCulture, Resource.Description_ClrReplaceItem, this.SourceProperty, this.SourcePropertyType);
+                            break;
+
+                        case WpfTraceCode.NullItem:
+                            text = string.Format(CultureInfo.CurrentCulture,
+                                Resource.Description_NullItem,
+                                match.Groups[WpfEntry.ExtraInfo].Value,
+                                match.Groups[WpfEntry.ExtraInfo2].Value);
+                            break;
+
+                        default:
+                            Debug.Fail($"No description for: WpfTraceCode.{this.Info.Code}");
                             break;
                     }
                     break;

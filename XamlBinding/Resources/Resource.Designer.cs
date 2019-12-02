@@ -97,6 +97,51 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot retrieve value due to missing information..
+        /// </summary>
+        public static string Description_MissingInfo {
+            get {
+                return ResourceManager.GetString("Description.MissingInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find source: {0}.
+        /// </summary>
+        public static string Description_NoSource {
+            get {
+                return ResourceManager.GetString("Description.NoSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot retrieve value and no fallback value exists, using the default value instead..
+        /// </summary>
+        public static string Description_NoValueToTransfer {
+            get {
+                return ResourceManager.GetString("Description.NoValueToTransfer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot retrieve value from a null data item. This could happen when the binding is detached or when binding to a Nullable type that has no value..
+        /// </summary>
+        public static string Description_NullDataItem {
+            get {
+                return ResourceManager.GetString("Description.NullDataItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; property not found for &apos;{1}&apos; because data item is null. This could happen because the data provider has not produced any data yet..
+        /// </summary>
+        public static string Description_NullItem {
+            get {
+                return ResourceManager.GetString("Description.NullItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Binding Path.
         /// </summary>
         public static string Header_BindingPath {

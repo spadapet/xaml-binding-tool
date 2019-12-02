@@ -130,6 +130,21 @@
   <data name="Description.ClrReplaceItem" xml:space="preserve">
     <value>{0} property not found on type {1}</value>
   </data>
+  <data name="Description.MissingInfo" xml:space="preserve">
+    <value>Cannot retrieve value due to missing information.</value>
+  </data>
+  <data name="Description.NoSource" xml:space="preserve">
+    <value>Cannot find source: {0}</value>
+  </data>
+  <data name="Description.NoValueToTransfer" xml:space="preserve">
+    <value>Cannot retrieve value and no fallback value exists, using the default value instead.</value>
+  </data>
+  <data name="Description.NullDataItem" xml:space="preserve">
+    <value>Cannot retrieve value from a null data item. This could happen when the binding is detached or when binding to a Nullable type that has no value.</value>
+  </data>
+  <data name="Description.NullItem" xml:space="preserve">
+    <value>'{0}' property not found for '{1}' because data item is null. This could happen because the data provider has not produced any data yet.</value>
+  </data>
   <data name="Header.BindingPath" xml:space="preserve">
     <value>Binding Path</value>
   </data>

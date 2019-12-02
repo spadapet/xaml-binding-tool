@@ -8,7 +8,7 @@ namespace XamlBinding.Parser
     [Name(nameof(WpfOutputParserProvider))]
     internal sealed class WpfOutputParserProvider : IOutputParserProvider
     {
-        private Lazy<WpfOutputParser> outputParser = new Lazy<WpfOutputParser>();
+        private readonly Lazy<WpfOutputParser> outputParser = new Lazy<WpfOutputParser>();
 
         IOutputParser IOutputParserProvider.GetOutputParser() => this.outputParser.Value;
     }

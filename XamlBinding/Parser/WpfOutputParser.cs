@@ -31,18 +31,40 @@ namespace XamlBinding.Parser
 
             this.processTextRegex = new Regex($@"^System.Windows.(?<{WpfOutputParser.CaptureCategory}>Data|ResourceDictionary) (?<{WpfOutputParser.CaptureSeverity}>.+?): (?<{WpfOutputParser.CaptureCode}>\d+) : (?<{WpfOutputParser.CaptureText}>.+?)$", overallRegexOptions);
 
-            // 1
-            Regex regexCannotCreateDefaultValueConverter = new Regex($@"Cannot create default converter to perform '(one-way|two-way)' conversions between types '(?<{WpfEntry.SourceFullType}>.+?)' and '(?<{WpfEntry.TargetFullType}>.+?)'. Consider using Converter property of Binding. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions);
-            // 5
-            Regex regexBadValueAtTransfer = new Regex($@"Value produced by BindingExpression is not valid for target property.((; Value=)| (?<DataValueType>.+?):)'(?<DataValue>.+?)' {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions);
-            // 40
-            Regex regexClrReplaceItem = new Regex($@"BindingExpression path error: '(?<{nameof(WpfEntry.SourceProperty)}>.+?)' property not found on '(object|current item of collection)' '{WpfOutputParser.CaptureItem(nameof(WpfEntry.SourcePropertyType), nameof(WpfEntry.SourcePropertyName))}'. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions);
-
-            this.codeToRegex = new Dictionary<WpfTraceCode, Regex>()
+            this.codeToRegex = new Dictionary<WpfTraceCode, Regex>(Enum.GetNames(typeof(WpfTraceCode)).Length)
             {
-                { WpfTraceCode.CannotCreateDefaultValueConverter, regexCannotCreateDefaultValueConverter},
-                { WpfTraceCode.BadValueAtTransfer, regexBadValueAtTransfer },
-                { WpfTraceCode.ClrReplaceItem, regexClrReplaceItem },
+                {
+                    WpfTraceCode.CannotCreateDefaultValueConverter,
+                    new Regex($@"Cannot create default converter to perform '(one-way|two-way)' conversions between types '(?<{WpfEntry.SourceFullType}>.+?)' and '(?<{WpfEntry.TargetFullType}>.+?)'\. Consider using Converter property of Binding\. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions)
+                },
+                {
+                    WpfTraceCode.NoSource,
+                    new Regex($@"Cannot find source for binding with reference '(?<{WpfEntry.ExtraInfo}>.+?)'\. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions)
+                },
+                {
+                    WpfTraceCode.BadValueAtTransfer,
+                    new Regex($@"Value produced by BindingExpression is not valid for target property\.((; Value=)| (?<DataValueType>.+?):)'(?<DataValue>.+?)' {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions)
+                },
+                {
+                    WpfTraceCode.NoValueToTransfer,
+                    new Regex($@"Cannot retrieve value using the binding and no valid fallback value exists; using default instead\. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions)
+                },
+                {
+                    WpfTraceCode.MissingInfo,
+                    new Regex($@"BindingExpression cannot retrieve value due to missing information\. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions)
+                },
+                {
+                    WpfTraceCode.NullDataItem,
+                    new Regex($@"BindingExpression cannot retrieve value from null data item\. This could happen when binding is detached or when binding to a Nullable type that has no value\. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions)
+                },
+                {
+                    WpfTraceCode.ClrReplaceItem,
+                    new Regex($@"BindingExpression path error: '(?<{nameof(WpfEntry.SourceProperty)}>.+?)' property not found on '(object|current item of collection)' '{WpfOutputParser.CaptureItem(nameof(WpfEntry.SourcePropertyType), nameof(WpfEntry.SourcePropertyName))}'\. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions)
+                },
+                {
+                    WpfTraceCode.NullItem,
+                    new Regex($@"BindingExpression path error: '(?<{WpfEntry.ExtraInfo}>.*?)' property not found for '(?<{WpfEntry.ExtraInfo2}>.*?)' because data item is null\.  This could happen because the data provider has not produced any data yet\. {WpfOutputParser.CaptureBindingExpression()}", lineRegexOptions)
+                },
             };
         }
 
