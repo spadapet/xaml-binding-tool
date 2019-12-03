@@ -45,6 +45,7 @@ namespace XamlBinding
         public const int CopyBindingPathId = 0x0106;
         public const int CopyTargetId = 0x0107;
         public const int CopyTargetTypeId = 0x0108;
+        public const int CopyDescriptionId = 0x0109;
 
         // Per-solution options
         public const string SolutionOptionKey = @"XamlBindingPackage.Options";

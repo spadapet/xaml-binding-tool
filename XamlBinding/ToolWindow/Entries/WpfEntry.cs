@@ -101,6 +101,10 @@ namespace XamlBinding.ToolWindow.Entries
                                 match.Groups[WpfEntry.TargetFullType].Value);
                             break;
 
+                        case WpfTraceCode.NoMentor:
+                            text = Resource.Description_NoMentor;
+                            break;
+
                         case WpfTraceCode.NoSource:
                             text = string.Format(CultureInfo.CurrentCulture, Resource.Description_NoSource, match.Groups[WpfEntry.ExtraInfo].Value);
                             break;
@@ -109,8 +113,16 @@ namespace XamlBinding.ToolWindow.Entries
                             text = string.Format(CultureInfo.CurrentCulture, Resource.Description_BadValueAtTransfer, this.DataValue, this.TargetText, this.TargetPropertyType);
                             break;
 
+                        case WpfTraceCode.BadConverterForTransfer:
+                            text = string.Format(CultureInfo.CurrentCulture, Resource.Description_BadConverterAtTransfer, this.DataValue, match.Groups[WpfEntry.ExtraInfo].Value);
+                            break;
+
                         case WpfTraceCode.NoValueToTransfer:
                             text = Resource.Description_NoValueToTransfer;
+                            break;
+
+                        case WpfTraceCode.CannotGetClrRawValue:
+                            text = string.Format(CultureInfo.CurrentCulture, Resource.Description_CannotGetClrRawValue, match.Groups[WpfEntry.ExtraInfo].Value);
                             break;
 
                         case WpfTraceCode.MissingInfo:

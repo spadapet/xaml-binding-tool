@@ -70,6 +70,15 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to convert value &apos;{0}&apos; to the target type. The fallback value will be used if it&apos;s available.{1}.
+        /// </summary>
+        public static string Description_BadConverterAtTransfer {
+            get {
+                return ResourceManager.GetString("Description.BadConverterAtTransfer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Value &apos;{0}&apos; cannot be assigned to property {1}, type={2}.
         /// </summary>
         public static string Description_BadValueAtTransfer {
@@ -88,6 +97,15 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to get value.{0}.
+        /// </summary>
+        public static string Description_CannotGetClrRawValue {
+            get {
+                return ResourceManager.GetString("Description.CannotGetClrRawValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} property not found on type {1}.
         /// </summary>
         public static string Description_ClrReplaceItem {
@@ -102,6 +120,15 @@ namespace XamlBinding.Resources {
         public static string Description_MissingInfo {
             get {
                 return ResourceManager.GetString("Description.MissingInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find governing FrameworkElement or FrameworkContentElement for target element..
+        /// </summary>
+        public static string Description_NoMentor {
+            get {
+                return ResourceManager.GetString("Description.NoMentor", resourceCulture);
             }
         }
         

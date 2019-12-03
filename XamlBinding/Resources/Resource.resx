@@ -121,17 +121,26 @@
     <value>XAML Binding Failures</value>
     <comment>Tools options name</comment>
   </data>
+  <data name="Description.BadConverterAtTransfer" xml:space="preserve">
+    <value>Failed to convert value '{0}' to the target type. The fallback value will be used if it's available.{1}</value>
+  </data>
   <data name="Description.BadValueAtTransfer" xml:space="preserve">
     <value>Value '{0}' cannot be assigned to property {1}, type={2}</value>
   </data>
   <data name="Description.CannotCreateDefaultValueConverter" xml:space="preserve">
     <value>Cannot convert from type '{0}' to '{1}'. Consider setting a converter on the binding.</value>
   </data>
+  <data name="Description.CannotGetClrRawValue" xml:space="preserve">
+    <value>Failed to get value.{0}</value>
+  </data>
   <data name="Description.ClrReplaceItem" xml:space="preserve">
     <value>{0} property not found on type {1}</value>
   </data>
   <data name="Description.MissingInfo" xml:space="preserve">
     <value>Cannot retrieve value due to missing information.</value>
+  </data>
+  <data name="Description.NoMentor" xml:space="preserve">
+    <value>Cannot find governing FrameworkElement or FrameworkContentElement for target element.</value>
   </data>
   <data name="Description.NoSource" xml:space="preserve">
     <value>Cannot find source: {0}</value>

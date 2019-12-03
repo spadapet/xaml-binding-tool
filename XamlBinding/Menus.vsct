@@ -156,6 +156,7 @@
             <IDSymbol name="CopyBindingPathId" value="0x0106" />
             <IDSymbol name="CopyTargetId" value="0x0107" />
             <IDSymbol name="CopyTargetTypeId" value="0x0108" />
+            <IDSymbol name="CopyDescriptionId" value="0x0109" />
         </GuidSymbol>
         <GuidSymbol name="guidImages" value="{2e47d056-94f1-4c81-920f-42b390524fe5}" >
             <IDSymbol name="BindingPaneCommandIcon" value="1" />
