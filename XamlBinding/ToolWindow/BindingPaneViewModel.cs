@@ -176,7 +176,14 @@ namespace XamlBinding.ToolWindow
         public bool IsDebugging
         {
             get => this.isDebugging;
-            set => this.SetProperty(ref this.isDebugging, value);
+            set
+            {
+                if (this.SetProperty(ref this.isDebugging, value) && value)
+                {
+                    // Changed from not-debugging to debugging
+                    this.ClearEntries();
+                }
+            }
         }
     }
 }

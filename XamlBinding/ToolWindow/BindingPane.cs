@@ -424,9 +424,7 @@ namespace XamlBinding.ToolWindow
             if (dbgmodeNew.HasFlag(DBGMODE.DBGMODE_Run))
             {
                 this.package.Telemetry.TrackEvent(Constants.EventDebugStart, this.viewModel.GetEntryTelemetryProperties());
-
                 this.viewModel.IsDebugging = true;
-                this.viewModel.ClearEntries();
 
                 this.WaitForDebugOutputTextBuffer();
             }

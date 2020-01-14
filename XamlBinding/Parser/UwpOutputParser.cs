@@ -21,19 +21,6 @@ namespace XamlBinding.Parser
         private const string CaptureDescription = "description";
         private const string CaptureBindingExpression = "bindingExpression";
 
-#if false
-        From os/onecoreuap/windows/dxaml/xcp/win/agcore.debug/CommonErrors.rc
-
-        TEXT_BINDINGTRACE_CONVERT_FAILED                "Error: Converter failed to convert value of type '%s' to type '%s'; %s. " // %s is the type of the object being converted, %s is the type to which it failed to convert, %s is the binding trace string
-        TEXT_BINDINGTRACE_INT_INDEXER_FAILED            "Error: Cannot get index [%u] value (type '%s') from type '%s'. %s." // %u is the index for which we failed, %s is the type of the indexer, %s is the type that implements the indexer, %s is the binding trace string
-        TEXT_BINDINGTRACE_INT_INDEXER_CONNECTION_FAILED "Error: Failed to connect to index '%u' in object '%s'. %s" // %u is the index to which we failed to connect, %s is the type of the source object, %s is the binding trace string
-        TEXT_BINDINGTRACE_GETTER_FAILED                 "Error: Cannot get '%s' value (type '%s') from type '%s'. %s." // %s is the name of the property for which the getter failed, %s is the type of the property, %s is the type that owns the property, %s is the binding trace string
-        TEXT_BINDINGTRACE_PROPERTY_CONNECTION_FAILED    "Error: BindingExpression path error: '%s' property not found on '%s'. %s" // %s is the property that was not found, %s is the type that should own the property, %s is the trace
-        TEXT_BINDINGTRACE_SETTER_FAILED                 "Error: Cannot save value from target back to source. %s." // %s is a trace string with the binding expression definition
-
-        TEXT_BINDINGTRACE_BINDINGEXPRESSION_TRACE "BindingExpression: Path='%s' DataItem='%s'; target element is '%s' (Name='%s'); target property is '%s' (type '%s')" // %s is the property path, %s is the type of the data item, %s is the type of the target element, %s is the name of the target element, %s is the target property, %s is the type of the target property
-#endif
-
         public UwpOutputParser()
         {
             this.stringCache = new StringCache();
@@ -46,8 +33,23 @@ namespace XamlBinding.Parser
 
             this.codeToRegex = new Dictionary<UwpTraceCode, Lazy<Regex>>(Enum.GetNames(typeof(UwpTraceCode)).Length);
 
+            this.AddRegex(UwpTraceCode.ConvertFailed,
+                $@"Converter failed to convert value of type '(.+?)' to type '(.+?)'");
+
+            this.AddRegex(UwpTraceCode.IntIndexerFailed,
+                $@"Cannot get index \[(.+?)\] value \(type '(.+?)'\) from type '(.+?)'");
+
+            this.AddRegex(UwpTraceCode.IntIndexerConnectionFailed,
+                $@"Failed to connect to index '(.+?)' in object '(.+?)'");
+
+            this.AddRegex(UwpTraceCode.GetterFailed,
+                $@"Cannot get '(.+?)' value \(type '(.+?)'\) from type '(.+?)'");
+
             this.AddRegex(UwpTraceCode.PropertyConnectionFailed,
                 $@"BindingExpression path error: '(.+?)' property not found on '(.+?)'");
+
+            this.AddRegex(UwpTraceCode.SetterFailed,
+                $@"Cannot save value from target back to source");
         }
 
         IReadOnlyList<ITableEntry> IOutputParser.ParseOutput(string text)
