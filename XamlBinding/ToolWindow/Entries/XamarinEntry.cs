@@ -13,34 +13,32 @@ namespace XamlBinding.ToolWindow.Entries
     /// <summary>
     /// One entry in the failure list
     /// </summary>
-    internal sealed class UwpEntry : EntryBase, IEquatable<UwpEntry>
+    internal sealed class XamarinEntry : EntryBase, IEquatable<XamarinEntry>
     {
-        public UwpTraceCode Code { get; }
+        public XamarinTraceCode Code { get; }
         public string BindingPath { get; }
         public string DataItemType { get; }
         public string TargetElementType { get; }
-        public string TargetElementName { get; }
         public string TargetProperty { get; }
         public string TargetPropertyType { get; }
         public string Description { get; }
 
         private int hashCode;
 
-        public UwpEntry(UwpTraceCode code, Match descriptionMatch, Match bindingExpressionMatch, StringCache stringCache)
+        public XamarinEntry(XamarinTraceCode code, Match match, StringCache stringCache)
             : base(stringCache)
         {
             this.Code = code;
 
-            this.BindingPath = stringCache.Get(bindingExpressionMatch.Groups[nameof(this.BindingPath)].Value);
-            this.DataItemType = stringCache.Get(bindingExpressionMatch.Groups[nameof(this.DataItemType)].Value);
-            this.TargetElementType = stringCache.Get(bindingExpressionMatch.Groups[nameof(this.TargetElementType)].Value);
-            this.TargetElementName = stringCache.Get(bindingExpressionMatch.Groups[nameof(this.TargetElementName)].Value);
-            this.TargetProperty = stringCache.Get(bindingExpressionMatch.Groups[nameof(this.TargetProperty)].Value);
-            this.TargetPropertyType = stringCache.Get(bindingExpressionMatch.Groups[nameof(this.TargetPropertyType)].Value);
-            this.Description = stringCache.Get(this.CreateDescription(descriptionMatch));
+            this.BindingPath = stringCache.Get(match.Groups[nameof(this.BindingPath)].Value);
+            this.DataItemType = stringCache.Get(match.Groups[nameof(this.DataItemType)].Value);
+            this.TargetElementType = stringCache.Get(match.Groups[nameof(this.TargetElementType)].Value);
+            this.TargetProperty = stringCache.Get(match.Groups[nameof(this.TargetProperty)].Value);
+            this.TargetPropertyType = stringCache.Get(match.Groups[nameof(this.TargetPropertyType)].Value);
+            this.Description = stringCache.Get(this.CreateDescription(match));
         }
 
-        public UwpEntry(UwpTraceCode code, string description, StringCache stringCache)
+        public XamarinEntry(XamarinTraceCode code, string description, StringCache stringCache)
             : base(stringCache)
         {
             this.Code = code;
@@ -48,7 +46,6 @@ namespace XamlBinding.ToolWindow.Entries
             this.BindingPath = string.Empty;
             this.DataItemType = string.Empty;
             this.TargetElementType = string.Empty;
-            this.TargetElementName = string.Empty;
             this.TargetProperty = string.Empty;
             this.TargetPropertyType = string.Empty;
             this.Description = stringCache.Get(description);
@@ -60,17 +57,14 @@ namespace XamlBinding.ToolWindow.Entries
 
             switch (this.Code)
             {
-                case UwpTraceCode.ConvertFailed:
-                case UwpTraceCode.GetterFailed:
-                case UwpTraceCode.IntIndexerConnectionFailed:
-                case UwpTraceCode.IntIndexerFailed:
-                case UwpTraceCode.PropertyConnectionFailed:
-                case UwpTraceCode.SetterFailed:
+                case XamarinTraceCode.PropertyNotFound:
+                case XamarinTraceCode.BadType:
+                case XamarinTraceCode.BadIndex:
                     // TODO: Come up with localized descriptions
                     break;
 
                 default:
-                    Debug.Fail($"No description for: UwpTraceCode.{this.Code}");
+                    Debug.Fail($"No description for: XamarinTraceCode.{this.Code}");
                     break;
             }
 
@@ -87,7 +81,6 @@ namespace XamlBinding.ToolWindow.Entries
                 sb.AppendLine(this.BindingPath);
                 sb.AppendLine(this.DataItemType);
                 sb.AppendLine(this.TargetElementType);
-                sb.AppendLine(this.TargetElementName);
                 sb.AppendLine(this.TargetProperty);
                 sb.AppendLine(this.TargetPropertyType);
                 sb.AppendLine(this.Description);
@@ -100,16 +93,15 @@ namespace XamlBinding.ToolWindow.Entries
 
         public override bool Equals(object obj)
         {
-            return obj is UwpEntry other && this.Equals(other);
+            return obj is XamarinEntry other && this.Equals(other);
         }
 
-        public bool Equals(UwpEntry other)
+        public bool Equals(XamarinEntry other)
         {
             return this.Code == other.Code &&
                 this.BindingPath == other.BindingPath &&
                 this.DataItemType == other.DataItemType &&
                 this.TargetElementType == other.TargetElementType &&
-                this.TargetElementName == other.TargetElementName &&
                 this.TargetProperty == other.TargetProperty &&
                 this.TargetPropertyType == other.TargetPropertyType &&
                 this.Description == other.Description;

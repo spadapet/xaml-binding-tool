@@ -1,36 +1,25 @@
 ﻿using Microsoft.VisualStudio.Shell.TableManager;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using XamlBinding.ToolWindow.Entries;
-using XamlBinding.Utility;
 
 namespace XamlBinding.Parser
 {
     /// <summary>
     /// Converts WPF's debug output into a list of table entries
     /// </summary>
-    internal sealed class WpfOutputParser : IOutputParser
+    internal sealed class WpfOutputParser : OutputParserBase<WpfTraceCode>
     {
-        private readonly StringCache stringCache;
-        private readonly Regex processTextRegex;
-        private readonly Dictionary<WpfTraceCode, Lazy<Regex>> codeToRegex;
-
         private const string CaptureCategory = "category";
         private const string CaptureSeverity = "severity";
         private const string CaptureCode = "code";
         private const string CaptureText = "text";
+        private static readonly string ProcessTextPattern = $@"^System.Windows.(?<{WpfOutputParser.CaptureCategory}>Data|ResourceDictionary) (?<{WpfOutputParser.CaptureSeverity}>.+?): (?<{WpfOutputParser.CaptureCode}>\d+) : (?<{WpfOutputParser.CaptureText}>.+?)\r?$";
 
         public WpfOutputParser()
+            : base(WpfOutputParser.ProcessTextPattern)
         {
-            this.stringCache = new StringCache();
-
-            this.processTextRegex = new Regex($@"^System.Windows.(?<{WpfOutputParser.CaptureCategory}>Data|ResourceDictionary) (?<{WpfOutputParser.CaptureSeverity}>.+?): (?<{WpfOutputParser.CaptureCode}>\d+) : (?<{WpfOutputParser.CaptureText}>.+?)\r?$",
-                RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Multiline);
-
-            this.codeToRegex = new Dictionary<WpfTraceCode, Lazy<Regex>>(Enum.GetNames(typeof(WpfTraceCode)).Length);
-
             this.AddRegex(WpfTraceCode.CannotCreateDefaultValueConverter,
                 $@"Cannot create default converter to perform '(one-way|two-way)' conversions between types '(?<{WpfEntry.SourceFullType}>.+?)' and '(?<{WpfEntry.TargetFullType}>.+?)'\. Consider using Converter property of Binding\. {WpfOutputParser.CaptureBindingExpression()}");
 
@@ -65,41 +54,7 @@ namespace XamlBinding.Parser
                 $@"BindingExpression path error: '(?<{WpfEntry.ExtraInfo}>.*?)' property not found for '(?<{WpfEntry.ExtraInfo2}>.*?)' because data item is null\.  This could happen because the data provider has not produced any data yet\. {WpfOutputParser.CaptureBindingExpression()}");
         }
 
-        IReadOnlyList<ITableEntry> IOutputParser.ParseOutput(string text)
-        {
-            MatchCollection matches = this.processTextRegex.Matches(text);
-            if (matches.Count == 0)
-            {
-                return Array.Empty<ITableEntry>();
-            }
-
-            List<ITableEntry> entries = new List<ITableEntry>(matches.Count);
-
-            foreach (Match match in matches)
-            {
-                if (this.ProcessLine(match) is ITableEntry entry)
-                {
-                    entries.Add(entry);
-                }
-            }
-
-            return entries;
-        }
-
-        void IOutputParser.EntriesCleared()
-        {
-            this.stringCache.Clear();
-        }
-
-        private void AddRegex(WpfTraceCode code, string text)
-        {
-            this.codeToRegex.Add(code, new Lazy<Regex>(() =>
-            {
-                return new Regex(text, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
-            }));
-        }
-
-        private ITableEntry ProcessLine(Match match)
+        protected override ITableEntry ProcessLine(Match match)
         {
             string categoryString = match.Groups[WpfOutputParser.CaptureCategory].Value;
             string severityString = match.Groups[WpfOutputParser.CaptureSeverity].Value;
@@ -111,7 +66,7 @@ namespace XamlBinding.Parser
                 WpfTraceSeverityUtility.Parse(severityString),
                 WpfTraceCodeUtility.Parse(codeString));
 
-            return this.codeToRegex.TryGetValue(info.Code, out Lazy<Regex> regex)
+            return this.CodeToRegex.TryGetValue(info.Code, out Lazy<Regex> regex)
                 ? this.ProcessKnownError(info, regex.Value, text)
                 : this.ProcessUnknownError(info, text);
         }
@@ -125,12 +80,12 @@ namespace XamlBinding.Parser
                 return this.ProcessUnknownError(info, text);
             }
 
-            return new WpfEntry(info, match, this.stringCache);
+            return new WpfEntry(info, match, this.StringCache);
         }
 
         private ITableEntry ProcessUnknownError(WpfTraceInfo info, string lineText)
         {
-            return new WpfEntry(info, lineText, this.stringCache);
+            return new WpfEntry(info, lineText, this.StringCache);
         }
 
         private static string CaptureBindingExpression()

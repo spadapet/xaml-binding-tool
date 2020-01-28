@@ -1,13 +1,9 @@
-﻿using Microsoft.VisualStudio.Imaging.Interop;
-using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.Shell.TableControl;
-using Microsoft.VisualStudio.Shell.TableManager;
+﻿using Microsoft.VisualStudio.Shell.TableManager;
 using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows;
 using XamlBinding.Parser;
 using XamlBinding.Resources;
 using XamlBinding.ToolWindow.Columns;
@@ -18,10 +14,9 @@ namespace XamlBinding.ToolWindow.Entries
     /// <summary>
     /// One entry in the failure list
     /// </summary>
-    internal sealed class WpfEntry : ObservableObject, IEquatable<WpfEntry>, ICountedTableEntry, IWpfTableEntry
+    internal sealed class WpfEntry : EntryBase, IEquatable<WpfEntry>
     {
         public WpfTraceInfo Info { get; }
-        public int Count { get; private set; }
         public string SourceProperty { get; }
         public string SourcePropertyType { get; }
         public string SourcePropertyName { get; }
@@ -40,16 +35,12 @@ namespace XamlBinding.ToolWindow.Entries
         public const string ExtraInfo = nameof(WpfEntry.ExtraInfo);
         public const string ExtraInfo2 = nameof(WpfEntry.ExtraInfo2);
 
-        private readonly StringCache stringCache;
         private int hashCode;
 
-        object ITableEntry.Identity => this;
-
         public WpfEntry(WpfTraceInfo info, Match match, StringCache stringCache)
+            : base(stringCache)
         {
-            this.stringCache = stringCache;
             this.Info = info;
-            this.Count = 1;
 
             this.SourceProperty = stringCache.Get(match.Groups[nameof(this.SourceProperty)].Value);
             this.SourcePropertyType = stringCache.Get(match.Groups[nameof(this.SourcePropertyType)].Value);
@@ -66,10 +57,9 @@ namespace XamlBinding.ToolWindow.Entries
         }
 
         public WpfEntry(WpfTraceInfo info, string description, StringCache stringCache)
+            : base(stringCache)
         {
-            this.stringCache = stringCache;
             this.Info = info;
-            this.Count = 1;
 
             this.SourceProperty = string.Empty;
             this.SourcePropertyType = string.Empty;
@@ -159,12 +149,6 @@ namespace XamlBinding.ToolWindow.Entries
 
         private string TargetText => !string.IsNullOrEmpty(this.TargetProperty) ? $"{this.TargetElementType}.{this.TargetProperty}" : string.Empty;
 
-        public void AddCount(int count = 1)
-        {
-            this.Count += count;
-            this.NotifyPropertyChanged(nameof(this.Count));
-        }
-
         public override int GetHashCode()
         {
             if (this.hashCode == 0)
@@ -211,7 +195,7 @@ namespace XamlBinding.ToolWindow.Entries
                 this.Description == other.Description;
         }
 
-        bool ITableEntry.TryGetValue(string keyName, out object content)
+        public override bool TryGetValue(string keyName, out object content)
         {
             switch (keyName)
             {
@@ -221,10 +205,6 @@ namespace XamlBinding.ToolWindow.Entries
 
                 case ColumnNames.Code:
                     content = this.Info;
-                    break;
-
-                case ColumnNames.Count:
-                    content = this.Count;
                     break;
 
                 case ColumnNames.BindingPath:
@@ -248,91 +228,25 @@ namespace XamlBinding.ToolWindow.Entries
                     break;
 
                 default:
-                    content = null;
-                    return false;
+                    return base.TryGetValue(keyName, out content);
             }
 
             return true;
         }
 
-        bool ITableEntry.TrySetValue(string keyName, object content)
-        {
-            return false;
-        }
-
-        bool ITableEntry.CanSetValue(string keyName)
-        {
-            return false;
-        }
-
-        bool IWpfTableEntry.TryCreateImageContent(string columnName, bool singleColumnView, out ImageMoniker content)
-        {
-            content = default;
-            return false;
-        }
-
-        bool IWpfTableEntry.TryCreateStringContent(string columnName, bool truncatedText, bool singleColumnView, out string content)
+        public override bool TryCreateStringContent(string columnName, bool truncatedText, bool singleColumnView, out string content)
         {
             switch (columnName)
             {
                 case ColumnNames.Code:
-                    content = this.stringCache.Get(this.Info.ToString());
-                    break;
-
-                case ColumnNames.Count:
-                    content = this.stringCache.Get(this.Count);
+                    content = this.StringCache.Get(this.Info.ToString());
                     break;
 
                 default:
-                    content = null;
-                    return false;
+                    return base.TryCreateStringContent(columnName, truncatedText, singleColumnView, out content);
             }
 
             return true;
-        }
-
-        bool IWpfTableEntry.TryCreateColumnContent(string columnName, bool singleColumnView, out FrameworkElement content)
-        {
-            content = null;
-            return false;
-        }
-
-        bool IWpfTableEntry.CanCreateDetailsContent()
-        {
-            return false;
-        }
-
-        bool IWpfTableEntry.TryCreateDetailsContent(out FrameworkElement expandedContent)
-        {
-            expandedContent = null;
-            return false;
-        }
-
-        bool IWpfTableEntry.TryCreateDetailsStringContent(out string content)
-        {
-            content = null;
-            return false;
-        }
-
-        bool IWpfTableEntry.TryCreateToolTip(string columnName, out object toolTip)
-        {
-            switch (columnName)
-            {
-                case ColumnNames.BindingPath:
-                case ColumnNames.DataContextType:
-                case ColumnNames.Description:
-                case ColumnNames.Target:
-                case ColumnNames.TargetType:
-                    if (this.TryGetValue(columnName, out string stringContent) && !string.IsNullOrEmpty(stringContent))
-                    {
-                        toolTip = stringContent;
-                        return true;
-                    }
-                    break;
-            }
-
-            toolTip = null;
-            return false;
         }
     }
 }

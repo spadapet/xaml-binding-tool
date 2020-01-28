@@ -320,5 +320,14 @@ namespace XamlBinding.Resources {
                 return ResourceManager.GetString("TraceLevels", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}. Binding: {1}.
+        /// </summary>
+        public static string Uwp_Description_None {
+            get {
+                return ResourceManager.GetString("Uwp.Description.None", resourceCulture);
+            }
+        }
     }
 }

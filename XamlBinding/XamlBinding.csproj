@@ -51,8 +51,12 @@
     </Compile>
     <Compile Include="Package\IOptions.cs" />
     <Compile Include="Parser\IOutputParserProvider.cs" />
+    <Compile Include="Parser\OutputParserBase.cs" />
+    <Compile Include="Parser\XamarinOutputParser.cs" />
     <Compile Include="Parser\UwpOutputParser.cs" />
+    <Compile Include="Parser\XamarinOutputParserProvider.cs" />
     <Compile Include="Parser\UwpOutputParserProvider.cs" />
+    <Compile Include="Parser\XamarinTraceCode.cs" />
     <Compile Include="Parser\WpfOutputParserProvider.cs" />
     <Compile Include="Parser\UwpTraceCode.cs" />
     <Compile Include="Parser\WpfTraceInfo.cs" />
@@ -75,6 +79,8 @@
     <Compile Include="ToolWindow\BindingPaneViewModel.cs" />
     <Compile Include="Parser\WpfTraceCategory.cs" />
     <Compile Include="ToolWindow\Columns\ColumnTargetType.cs" />
+    <Compile Include="ToolWindow\Entries\EntryBase.cs" />
+    <Compile Include="ToolWindow\Entries\XamarinEntry.cs" />
     <Compile Include="ToolWindow\Entries\UwpEntry.cs" />
     <Compile Include="ToolWindow\Entries\WpfEntry.cs" />
     <Compile Include="ToolWindow\Entries\CountedTableEntryComparer.cs" />

@@ -9,6 +9,7 @@ Currently supported frameworks:
 * WPF for .NET Framework
 * WPF for .NET Core 3
 * UWP
+* Xamarin (Android)
 
 Right now a small set of failures are fully parsed and transformed into pretty columns, the rest have their full ugly text shown in the Description column. More and more failures will look pretty in the list over time.
 
