@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.Composition;
 
-namespace XamlBinding.Parser
+namespace XamlBinding.Parser.WPF
 {
     [Export(typeof(IOutputParserProvider))]
     [Name(nameof(WpfOutputParserProvider))]

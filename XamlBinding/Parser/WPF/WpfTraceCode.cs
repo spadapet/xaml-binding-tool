@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace XamlBinding.Parser
+namespace XamlBinding.Parser.WPF
 {
     internal enum WpfTraceCode
     {

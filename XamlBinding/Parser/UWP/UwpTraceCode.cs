@@ -1,4 +1,4 @@
-﻿namespace XamlBinding.Parser
+﻿namespace XamlBinding.Parser.UWP
 {
     internal enum UwpTraceCode
     {

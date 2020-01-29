@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.Composition;
 
-namespace XamlBinding.Parser
+namespace XamlBinding.Parser.Xamarin
 {
     [Export(typeof(IOutputParserProvider))]
     [Name(nameof(XamarinOutputParserProvider))]

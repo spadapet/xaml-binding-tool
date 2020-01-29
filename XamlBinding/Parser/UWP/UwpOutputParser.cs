@@ -5,9 +5,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using XamlBinding.Resources;
-using XamlBinding.ToolWindow.Entries;
 
-namespace XamlBinding.Parser
+namespace XamlBinding.Parser.UWP
 {
     /// <summary>
     /// Converts debug output into a list of table entries

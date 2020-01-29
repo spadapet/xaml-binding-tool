@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Globalization;
 
-namespace XamlBinding.Parser
+namespace XamlBinding.Parser.WPF
 {
     /// <summary>
     /// Just combines category, severity, and code into one struct that allows comparison
     /// </summary>
-    internal struct WpfTraceInfo : IEquatable<WpfTraceInfo>, IComparable<WpfTraceInfo>
+    internal struct WpfTraceInfo : IEquatable<WpfTraceInfo>, IComparable<WpfTraceInfo>, IComparable
     {
         public WpfTraceCategory Category { get; }
         public WpfTraceSeverity Severity { get; }
@@ -49,6 +49,11 @@ namespace XamlBinding.Parser
         }
 
         public int CompareTo(WpfTraceInfo other)
+        {
+            return this.GetHashCode().CompareTo(other.GetHashCode());
+        }
+
+        public int CompareTo(object other)
         {
             return this.GetHashCode().CompareTo(other.GetHashCode());
         }

@@ -52,16 +52,16 @@
     <Compile Include="Package\IOptions.cs" />
     <Compile Include="Parser\IOutputParserProvider.cs" />
     <Compile Include="Parser\OutputParserBase.cs" />
-    <Compile Include="Parser\XamarinOutputParser.cs" />
-    <Compile Include="Parser\UwpOutputParser.cs" />
-    <Compile Include="Parser\XamarinOutputParserProvider.cs" />
-    <Compile Include="Parser\UwpOutputParserProvider.cs" />
-    <Compile Include="Parser\XamarinTraceCode.cs" />
-    <Compile Include="Parser\WpfOutputParserProvider.cs" />
-    <Compile Include="Parser\UwpTraceCode.cs" />
-    <Compile Include="Parser\WpfTraceInfo.cs" />
-    <Compile Include="Parser\WpfTraceCode.cs" />
-    <Compile Include="Parser\WpfTraceSeverity.cs" />
+    <Compile Include="Parser\Xamarin\XamarinOutputParser.cs" />
+    <Compile Include="Parser\UWP\UwpOutputParser.cs" />
+    <Compile Include="Parser\Xamarin\XamarinOutputParserProvider.cs" />
+    <Compile Include="Parser\UWP\UwpOutputParserProvider.cs" />
+    <Compile Include="Parser\Xamarin\XamarinTraceCode.cs" />
+    <Compile Include="Parser\WPF\WpfOutputParserProvider.cs" />
+    <Compile Include="Parser\UWP\UwpTraceCode.cs" />
+    <Compile Include="Parser\WPF\WpfTraceInfo.cs" />
+    <Compile Include="Parser\WPF\WpfTraceCode.cs" />
+    <Compile Include="Parser\WPF\WpfTraceSeverity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Package\BindingPackage.cs" />
     <Compile Include="Resources\Resource.Designer.cs">
@@ -70,19 +70,19 @@
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
     <Compile Include="Parser\IOutputParser.cs" />
-    <Compile Include="Parser\WpfOutputParser.cs" />
+    <Compile Include="Parser\WPF\WpfOutputParser.cs" />
     <Compile Include="ToolWindow\BindingPane.cs" />
     <Compile Include="ToolWindow\BindingPaneControl.xaml.cs">
       <DependentUpon>BindingPaneControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ToolWindow\BindingPaneController.cs" />
     <Compile Include="ToolWindow\BindingPaneViewModel.cs" />
-    <Compile Include="Parser\WpfTraceCategory.cs" />
+    <Compile Include="Parser\WPF\WpfTraceCategory.cs" />
     <Compile Include="ToolWindow\Columns\ColumnTargetType.cs" />
     <Compile Include="ToolWindow\Entries\EntryBase.cs" />
-    <Compile Include="ToolWindow\Entries\XamarinEntry.cs" />
-    <Compile Include="ToolWindow\Entries\UwpEntry.cs" />
-    <Compile Include="ToolWindow\Entries\WpfEntry.cs" />
+    <Compile Include="Parser\Xamarin\XamarinEntry.cs" />
+    <Compile Include="Parser\UWP\UwpEntry.cs" />
+    <Compile Include="Parser\WPF\WpfEntry.cs" />
     <Compile Include="ToolWindow\Entries\CountedTableEntryComparer.cs" />
     <Compile Include="ToolWindow\Entries\ICountedTableEntry.cs" />
     <Compile Include="ToolWindow\Columns\ColumnDescription.cs" />

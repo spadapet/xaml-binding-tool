@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using XamlBinding.Parser;
 using XamlBinding.Resources;
 using XamlBinding.ToolWindow.Columns;
+using XamlBinding.ToolWindow.Entries;
 using XamlBinding.Utility;
 
-namespace XamlBinding.ToolWindow.Entries
+namespace XamlBinding.Parser.WPF
 {
     /// <summary>
     /// One entry in the failure list

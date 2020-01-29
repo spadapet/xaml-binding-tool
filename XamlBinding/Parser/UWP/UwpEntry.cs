@@ -4,11 +4,11 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
-using XamlBinding.Parser;
 using XamlBinding.ToolWindow.Columns;
+using XamlBinding.ToolWindow.Entries;
 using XamlBinding.Utility;
 
-namespace XamlBinding.ToolWindow.Entries
+namespace XamlBinding.Parser.UWP
 {
     /// <summary>
     /// One entry in the failure list

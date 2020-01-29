@@ -3,9 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using XamlBinding.ToolWindow.Entries;
 
-namespace XamlBinding.Parser
+namespace XamlBinding.Parser.Xamarin
 {
     /// <summary>
     /// Converts debug output into a list of table entries

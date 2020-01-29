@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.Shell.Interop;
 using System.Diagnostics;
 
-namespace XamlBinding.Parser
+namespace XamlBinding.Parser.WPF
 {
     internal enum WpfTraceSeverity
     {
