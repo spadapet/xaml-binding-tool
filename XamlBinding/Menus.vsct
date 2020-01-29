@@ -8,13 +8,13 @@
             <Menu guid="guidBindingPaneCmdSet" id="Toolbar" type="Toolbar">
                 <CommandFlag>DefaultDocked</CommandFlag>
                 <Strings>
-                    <ButtonText>XAML Binding Failures Toolbar</ButtonText>
-                    <CommandName>XAML Binding Failures Toolbar</CommandName>
+                    <ButtonText>XAML Binding Failures Toolbar (experimental)</ButtonText>
+                    <CommandName>XAML Binding Failures Toolbar (experimental)</CommandName>
                 </Strings>
             </Menu>
             <Menu guid="guidBindingPaneCmdSet" id="ContextMenu" priority="0x0000" type="Context">
                 <Strings>
-                    <ButtonText>XAML Binding Failures</ButtonText>
+                    <ButtonText>XAML Binding Failures (experimental)</ButtonText>
                 </Strings>
             </Menu>
         </Menus>
@@ -40,7 +40,7 @@
                 <Parent guid="guidVSDebugGroup" id="IDG_DEBUG_WINDOWS_GENERAL" />
                 <Icon guid="guidImages" id="BindingPaneCommandIcon" />
                 <Strings>
-                    <ButtonText>XAML Binding Failures</ButtonText>
+                    <ButtonText>XAML Binding Failures (experimental)</ButtonText>
                 </Strings>
             </Button>
             <Button guid="guidBindingPaneCmdSet" id="ClearCommandId" priority="0x0100" type="Button">

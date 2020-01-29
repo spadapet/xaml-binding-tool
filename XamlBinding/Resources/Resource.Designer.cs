@@ -61,7 +61,7 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to XAML Binding Failures.
+        ///   Looks up a localized string similar to XAML Binding Failures (experimental).
         /// </summary>
         public static string _100 {
             get {
@@ -259,7 +259,7 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shows the XAML Binding Failures tool window pane when there is a new error.
+        ///   Looks up a localized string similar to Shows the XAML Binding Failures (experimental) tool window pane when there is a new error.
         /// </summary>
         public static string OptionsDescriptionShowPane {
             get {
@@ -295,7 +295,7 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to XAML Binding Failures.
+        ///   Looks up a localized string similar to XAML Binding Failures (experimental).
         /// </summary>
         public static string ToolWindow_Title {
             get {

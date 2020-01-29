@@ -2,12 +2,12 @@
 using System.Resources;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("XAML Binding")]
+[assembly: AssemblyTitle("XAML Binding Debug Output")]
 [assembly: AssemblyDescription("Provides a tool window that shows XAML binding failures while debugging in Visual Studio 2019.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Peter Spada")]
-[assembly: AssemblyProduct("XAML Binding")]
-[assembly: AssemblyCopyright("Copyright 2019")]
+[assembly: AssemblyProduct("XAML Binding Debug Output")]
+[assembly: AssemblyCopyright("Copyright 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

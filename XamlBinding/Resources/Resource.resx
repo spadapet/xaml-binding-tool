@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="100" xml:space="preserve">
-    <value>XAML Binding Failures</value>
+    <value>XAML Binding Failures (experimental)</value>
     <comment>Tools options name</comment>
   </data>
   <data name="Description.BadConverterAtTransfer" xml:space="preserve">
@@ -185,7 +185,7 @@
     <value>Plays a notification sound whenever a failure is added to the list</value>
   </data>
   <data name="OptionsDescriptionShowPane" xml:space="preserve">
-    <value>Shows the XAML Binding Failures tool window pane when there is a new error</value>
+    <value>Shows the XAML Binding Failures (experimental) tool window pane when there is a new error</value>
   </data>
   <data name="OptionsNameFlashWindow" xml:space="preserve">
     <value>Flash window</value>
@@ -197,7 +197,7 @@
     <value>Show tool window pane</value>
   </data>
   <data name="ToolWindow.Title" xml:space="preserve">
-    <value>XAML Binding Failures</value>
+    <value>XAML Binding Failures (experimental)</value>
   </data>
   <data name="ToolWindow.TitleLoading" xml:space="preserve">
     <value>XAML Binding Failures (loading)</value>
