@@ -10,7 +10,7 @@ using XamlBinding.ToolWindow.Entries;
 namespace XamlBinding.Parser
 {
     /// <summary>
-    /// Converts UWP's debug output into a list of table entries
+    /// Converts debug output into a list of table entries
     /// </summary>
     internal sealed class UwpOutputParser : OutputParserBase<UwpTraceCode>
     {

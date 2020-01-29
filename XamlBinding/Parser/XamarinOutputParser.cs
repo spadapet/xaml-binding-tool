@@ -8,7 +8,7 @@ using XamlBinding.ToolWindow.Entries;
 namespace XamlBinding.Parser
 {
     /// <summary>
-    /// Converts UWP's debug output into a list of table entries
+    /// Converts debug output into a list of table entries
     /// </summary>
     internal sealed class XamarinOutputParser : OutputParserBase<XamarinTraceCode>
     {
@@ -22,10 +22,10 @@ namespace XamlBinding.Parser
                 $@"'(?<{nameof(XamarinEntry.BindingPath)}>.+?)' property not found on '(?<{nameof(XamarinEntry.DataItemType)}>.+?)', target property: '(?<{nameof(XamarinEntry.TargetElementType)}>.+)\.(?<{nameof(XamarinEntry.TargetProperty)}>.+?)'");
 
             this.AddRegex(XamarinTraceCode.BadType,
-                $@"XAMARIN TODO ADD REGEX");
+                $@".*? can not be converted to type '(?<{nameof(XamarinEntry.TargetPropertyType)}>.+?)'");
 
             this.AddRegex(XamarinTraceCode.BadIndex,
-                $@"XAMARIN TODO ADD REGEX");
+                $@".*? could not be parsed as an index for a (?<{nameof(XamarinEntry.DataItemType)}>.+?)");
         }
 
         protected override ITableEntry ProcessLine(Match match)

@@ -7,7 +7,7 @@ using XamlBinding.ToolWindow.Entries;
 namespace XamlBinding.Parser
 {
     /// <summary>
-    /// Converts WPF's debug output into a list of table entries
+    /// Converts debug output into a list of table entries
     /// </summary>
     internal sealed class WpfOutputParser : OutputParserBase<WpfTraceCode>
     {
