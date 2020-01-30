@@ -9,11 +9,11 @@ Currently supported frameworks:
 * WPF for .NET Framework
 * WPF for .NET Core 3
 * UWP
-* Xamarin (Android)
+* Xamarin
+    * Android and iOS are supported.
+    * Xamarin UWP is a work-in-progress and isn't supported yet.
 
-Right now a small set of failures are fully parsed and transformed into pretty columns, the rest have their full ugly text shown in the Description column. More and more failures will look pretty in the list over time.
-
-**Location of command in the Debug|Windows menu:**
+**Location of the command in the Debug|Windows menu:**
 
 ![Command Location](https://raw.githubusercontent.com/spadapet/xaml-binding-tool/master/XamlBinding/Resources/CommandLocation.png)
 
