@@ -12,7 +12,7 @@ namespace XamlBinding.Parser.Xamarin
     internal sealed class XamarinOutputParser : OutputParserBase<XamarinTraceCode>
     {
         private const string CaptureDescription = "description";
-        private static readonly string ProcessTextPattern = $@"^\[.+?\] Binding: (?<{XamarinOutputParser.CaptureDescription}>.+?)\r?$";
+        private static readonly string ProcessTextPattern = $@"^(\[.+?\] |)Binding: (?<{XamarinOutputParser.CaptureDescription}>.+?)\r?$";
 
         public XamarinOutputParser()
             : base(XamarinOutputParser.ProcessTextPattern)

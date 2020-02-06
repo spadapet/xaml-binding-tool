@@ -11,7 +11,8 @@ Currently supported frameworks:
 * UWP
 * Xamarin
     * Android and iOS are supported.
-    * Xamarin UWP is a work-in-progress and isn't supported yet.
+    * UWP is supported in Xamarin version 4.5.0.266-pre3 and newer.
+    * UWP must target at least Windows version 16299.
 
 **Location of the command in the Debug|Windows menu:**
 
