@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.Imaging.Interop;
+﻿using System.Windows;
+using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.TableControl;
 using Microsoft.VisualStudio.Shell.TableManager;
-using System.Windows;
 using XamlBinding.ToolWindow.Columns;
 using XamlBinding.Utility;
 

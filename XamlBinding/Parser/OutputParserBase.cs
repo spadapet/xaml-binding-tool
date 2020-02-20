@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.Shell.TableManager;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.Shell.TableManager;
 using XamlBinding.Utility;
 
 namespace XamlBinding.Parser

@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.OLE.Interop;
+﻿using System;
+using System.Windows;
+using System.Windows.Input;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.TableControl;
-using System;
-using System.Windows;
-using System.Windows.Input;
 using XamlBinding.Package;
 using IServiceProvider = System.IServiceProvider;
 

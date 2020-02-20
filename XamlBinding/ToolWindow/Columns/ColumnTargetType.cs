@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.Shell.TableControl;
+﻿using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Shell.TableControl;
 using Microsoft.VisualStudio.Utilities;
-using System.ComponentModel.Composition;
 using XamlBinding.Resources;
 
 namespace XamlBinding.ToolWindow.Columns

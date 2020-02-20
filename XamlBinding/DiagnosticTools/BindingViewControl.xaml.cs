@@ -13,16 +13,16 @@ using XamlBinding.ToolWindow.Columns;
 using XamlBinding.ToolWindow.Table;
 using IServiceProvider = System.IServiceProvider;
 
-namespace XamlBinding.ToolWindow
+namespace XamlBinding.DiagnosticTools
 {
-    internal sealed partial class BindingPaneControl : UserControl, IDisposable
+    internal sealed partial class BindingViewControl : UserControl, IDisposable
     {
-        public BindingPaneViewModel ViewModel { get; }
+        public BindingViewModel ViewModel { get; }
         public IWpfTableControl4 TableControl { get; }
         private readonly TableDataSource tableDataSource;
         private readonly ITableManager tableManager;
 
-        public BindingPaneControl(IServiceProvider serviceProvider, BindingPaneViewModel viewModel)
+        public BindingViewControl(IServiceProvider serviceProvider, BindingViewModel viewModel)
         {
             IComponentModel componentModel = serviceProvider.GetService<SComponentModel, IComponentModel>();
             ITableManagerProvider tableManagerProvider = componentModel.GetService<ITableManagerProvider>();

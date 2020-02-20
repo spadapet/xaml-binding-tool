@@ -1,9 +1,9 @@
-﻿using Microsoft.VisualStudio.Shell;
+﻿using System;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.TableControl;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.ComponentModel.Composition;
 
 namespace XamlBinding.ToolWindow.Table
 {

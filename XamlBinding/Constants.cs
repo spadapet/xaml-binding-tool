@@ -84,12 +84,21 @@ namespace XamlBinding
 
         // GUIDs
         public const string ApplicationInsightsInstrumentationKeyString = "CA03211C-F990-4E39-A24E-FF5CDC946D9B";
+        public const string BindingDetailsViewString = "98446394-0538-4791-9D9F-8A038CDF2640";
         public const string BindingPackageString = "08F93EBA-7555-4CCB-9CEA-82925FCBE8FF";
         public const string BindingOptionsString = "C828BD8A-8C73-48CE-B9DF-63CB8AF909C4";
         public const string BindingPaneString = "DCCA5C53-7A37-4F9B-BE15-E1063D061497";
-        public const string ShowBindingPaneContextString = "C8272E21-A17A-429F-8BEF-325C6D1E8462";
+        public const string BindingToolString = "BE7E4EDA-3D90-45B3-80EC-E3CAA0974BB8";
         public const string CallStackWindowString = "34E76E81-EE4A-11D0-AE2E-00A0C90FFFC3";
+        public const string Microsoft_VisualStudio_DesignTools_XamlTrace_String = "EC820AF9-537E-5097-EB27-B527653F73B5";
+        public const string ShowBindingPaneContextString = "C8272E21-A17A-429F-8BEF-325C6D1E8462";
+        public const string StandardCollectorAgentString = "5107AD83-117B-4232-B0D1-934469C1E0F6";
         public const string TableManagerString = "520311B2-6778-4AD7-A923-BD93F0E19892";
         public const string ToolsOptionsDebugOutputPageString = "82C13516-664F-4F52-8EEE-3F90E80CEA9A";
+
+        public static readonly Guid BindingDetailsViewGuid = new Guid(Constants.BindingDetailsViewString);
+        public static readonly Guid BindingToolGuid = new Guid(Constants.BindingToolString);
+        public static readonly Guid Microsoft_VisualStudio_DesignTools_XamlTrace_Guid = new Guid(Constants.Microsoft_VisualStudio_DesignTools_XamlTrace_String);
+        public static readonly Guid StandardCollectorAgentGuid = new Guid(Constants.StandardCollectorAgentString);
     }
 }

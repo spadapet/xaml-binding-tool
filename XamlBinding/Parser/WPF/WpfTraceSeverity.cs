@@ -1,5 +1,5 @@
-﻿using Microsoft.VisualStudio.Shell.Interop;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace XamlBinding.Parser.WPF
 {

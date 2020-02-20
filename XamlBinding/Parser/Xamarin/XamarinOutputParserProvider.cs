@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Utilities;
 
 namespace XamlBinding.Parser.Xamarin
 {

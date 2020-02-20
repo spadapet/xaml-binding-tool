@@ -1,10 +1,10 @@
-﻿using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using XamlBinding.Package;
 
 namespace XamlBinding.Utility
@@ -34,7 +34,7 @@ namespace XamlBinding.Utility
                 this.client.Context.Component.Version = this.GetType().Assembly.GetName().Version.ToString();
                 this.client.Context.Session.Id = Guid.NewGuid().ToString();
                 this.client.Context.User.Id = options.UserId.ToString();
-                this.client.Context.Properties[Constants.PropertySolutionId] = this.GetSolutionId();
+                this.client.Context.GlobalProperties[Constants.PropertySolutionId] = this.GetSolutionId();
 
                 this.solutionOptions.PropertyChanged += this.OnSolutionOptionChanged;
             }
@@ -71,7 +71,7 @@ namespace XamlBinding.Utility
 
         private void OnSolutionOptionChanged(object sender, PropertyChangedEventArgs args)
         {
-            this.client.Context.Properties[Constants.PropertySolutionId] = this.GetSolutionId();
+            this.client.Context.GlobalProperties[Constants.PropertySolutionId] = this.GetSolutionId();
         }
 
         public void TrackEvent(string eventName, IEnumerable<KeyValuePair<string, object>> properties = null)

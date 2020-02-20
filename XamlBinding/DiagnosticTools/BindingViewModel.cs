@@ -4,20 +4,17 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.DiagnosticsHub;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.TableControl;
 using Microsoft.VisualStudio.Shell.TableManager;
-using XamlBinding.Parser;
 using XamlBinding.ToolWindow.Columns;
 using XamlBinding.ToolWindow.Entries;
 using XamlBinding.Utility;
 
-namespace XamlBinding.ToolWindow
+namespace XamlBinding.DiagnosticTools
 {
-    /// <summary>
-    /// Keeps the state of the tool window
-    /// </summary>
-    internal sealed class BindingPaneViewModel : ObservableObject, IDisposable
+    internal sealed class BindingViewModel : ObservableObject, IDisposable
     {
         public Telemetry Telemetry { get; }
         public IReadOnlyList<ITableEntry> Entries => this.entries;
@@ -25,23 +22,24 @@ namespace XamlBinding.ToolWindow
 
         private readonly ObservableCollection<ITableEntry> entries;
         private readonly HashSet<ICountedTableEntry> countedEntries;
-        private readonly IEnumerable<IOutputParser> outputParsers;
-        private string traceLevel;
+        private IDocument document;
         private bool isDebugging;
 
-        public BindingPaneViewModel(Telemetry telemetry, IEnumerable<IOutputParser> outputParsers)
+        public BindingViewModel(IDocument document, Telemetry telemetry)
         {
             this.Telemetry = telemetry;
-            this.outputParsers = outputParsers;
             this.countedEntries = new HashSet<ICountedTableEntry>(new CountedTableEntryComparer());
             this.entries = new ObservableCollection<ITableEntry>();
             this.entries.CollectionChanged += this.OnEntryCollectionChanged;
-            this.traceLevel = nameof(SourceLevels.Error);
+            this.document = document;
+            this.document.StateChanged += this.OnDocumentStateChanged;
+            // this.IsDebugging = args.CurrentState...;
         }
 
         public void Dispose()
         {
             this.entries.CollectionChanged -= this.OnEntryCollectionChanged;
+            this.document.StateChanged -= this.OnDocumentStateChanged;
         }
 
         private void OnEntryCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -50,6 +48,11 @@ namespace XamlBinding.ToolWindow
             {
                 this.NotifyPropertyChanged(nameof(this.CanClearEntries));
             }
+        }
+
+        private void OnDocumentStateChanged(object sender, DocumentStateChangeEventArgs args)
+        {
+            // this.IsDebugging = args.CurrentState...;
         }
 
         private int ExpandedEntryCount
@@ -76,7 +79,6 @@ namespace XamlBinding.ToolWindow
             {
                 { Constants.PropertyEntryCount, this.entries.Count },
                 { Constants.PropertyExpandedEntryCount, this.ExpandedEntryCount },
-                { Constants.PropertyTraceLevel, this.traceLevel },
             };
 
             if (includeErrorCodes)
@@ -105,11 +107,6 @@ namespace XamlBinding.ToolWindow
         {
             this.countedEntries.Clear();
             this.entries.Clear();
-
-            foreach (IOutputParser outputParser in this.outputParsers)
-            {
-                outputParser.EntriesCleared();
-            }
         }
 
         public bool AddEntry(ITableEntry entry)
@@ -150,27 +147,6 @@ namespace XamlBinding.ToolWindow
 
                 return true;
             }
-        }
-
-        public bool AddEntries(IEnumerable<ITableEntry> entries)
-        {
-            bool addedNew = false;
-
-            foreach (ITableEntry entry in entries)
-            {
-                if (this.AddEntry(entry))
-                {
-                    addedNew = true;
-                }
-            }
-
-            return addedNew;
-        }
-
-        public string TraceLevel
-        {
-            get => this.traceLevel;
-            set => this.SetProperty(ref this.traceLevel, value ?? nameof(SourceLevels.Error));
         }
 
         public bool IsDebugging

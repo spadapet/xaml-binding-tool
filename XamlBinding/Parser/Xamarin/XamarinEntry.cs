@@ -1,9 +1,9 @@
-﻿using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Shell.TableManager;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Shell.TableManager;
 using XamlBinding.ToolWindow.Columns;
 using XamlBinding.ToolWindow.Entries;
 using XamlBinding.Utility;

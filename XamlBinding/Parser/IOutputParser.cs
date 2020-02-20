@@ -1,5 +1,5 @@
-﻿using Microsoft.VisualStudio.Shell.TableManager;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.VisualStudio.Shell.TableManager;
 
 namespace XamlBinding.Parser
 {

@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.Shell.TableManager;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.Shell.TableManager;
 
 namespace XamlBinding.Parser.Xamarin
 {

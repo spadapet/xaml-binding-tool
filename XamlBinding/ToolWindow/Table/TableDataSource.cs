@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.Shell.TableManager;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using Microsoft.VisualStudio.Shell.TableManager;
 using XamlBinding.Resources;
 
 namespace XamlBinding.ToolWindow.Table

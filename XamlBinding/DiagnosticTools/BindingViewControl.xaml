@@ -1,0 +1,29 @@
+﻿<UserControl
+    x:Class="XamlBinding.DiagnosticTools.BindingViewControl"
+    x:ClassModifier="internal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+    xmlns:res="clr-namespace:XamlBinding.Resources"
+    xmlns:util="clr-namespace:XamlBinding.Utility"
+    Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
+    Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
+    mc:Ignorable="d"
+    d:DesignHeight="200"
+    d:DesignWidth="900"
+    AutomationProperties.Name="{x:Static res:Resource.ToolWindow_Title}"
+    DataContext="{Binding ViewModel, RelativeSource={RelativeSource Mode=Self}}"
+    IsKeyboardFocusWithinChanged="OnKeyboardFocusWithinChanged">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <util:DesignTimeResources />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}">
+        <Border x:Name="tableHolder" />
+    </Grid>
+</UserControl>

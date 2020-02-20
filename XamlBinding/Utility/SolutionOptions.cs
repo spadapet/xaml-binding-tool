@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.PlatformUI;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using Microsoft.VisualStudio.PlatformUI;
 
 namespace XamlBinding.Utility
 {

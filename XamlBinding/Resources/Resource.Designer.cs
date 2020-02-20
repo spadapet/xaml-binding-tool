@@ -70,6 +70,51 @@ namespace XamlBinding.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to XAML Binding Failures (experimental).
+        /// </summary>
+        public static string BindingDetailsView_Description {
+            get {
+                return ResourceManager.GetString("BindingDetailsView.Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XAML Bindings (experimental).
+        /// </summary>
+        public static string BindingDetailsView_Title {
+            get {
+                return ResourceManager.GetString("BindingDetailsView.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XAML Binding Failures.
+        /// </summary>
+        public static string BindingSummaryItem_Name {
+            get {
+                return ResourceManager.GetString("BindingSummaryItem.Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to See the XAML binding failures that occurred during the session (experimental).
+        /// </summary>
+        public static string BindingToolFactory_Description {
+            get {
+                return ResourceManager.GetString("BindingToolFactory.Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XAML Binding Failures (experimental).
+        /// </summary>
+        public static string BindingToolFactory_Title {
+            get {
+                return ResourceManager.GetString("BindingToolFactory.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to convert value &apos;{0}&apos; to the target type. The fallback value will be used if it&apos;s available.{1}.
         /// </summary>
         public static string Description_BadConverterAtTransfer {
