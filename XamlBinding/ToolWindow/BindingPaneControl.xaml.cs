@@ -18,7 +18,7 @@ namespace XamlBinding.ToolWindow
     internal sealed partial class BindingPaneControl : UserControl, IDisposable
     {
         public BindingPaneViewModel ViewModel { get; }
-        public IWpfTableControl4 TableControl { get; }
+        public IWpfTableControl TableControl { get; }
         private readonly TableDataSource tableDataSource;
         private readonly ITableManager tableManager;
 
@@ -32,7 +32,7 @@ namespace XamlBinding.ToolWindow
             this.tableDataSource = new TableDataSource(this.ViewModel.Entries);
             this.tableManager = tableManagerProvider.GetTableManager(Constants.TableManagerString);
             this.tableManager.AddSource(this.tableDataSource, ColumnNames.DefaultSet.ToArray());
-            this.TableControl = (IWpfTableControl4)tableControlProvider.CreateControl(this.tableManager, true,
+            this.TableControl = tableControlProvider.CreateControl(this.tableManager, true,
                 ColumnNames.DefaultSet.Select(n => new ColumnState2(n, isVisible: true, width: 0)),
                 ColumnNames.DefaultSet.ToArray());
 
