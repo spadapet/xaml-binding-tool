@@ -21,6 +21,7 @@ namespace XamlBinding.Utility
 
         public Telemetry(IOptions options, SolutionOptions solutionOptions)
         {
+#if ENABLE_TELEMETRY
             this.solutionOptions = solutionOptions;
 
             try
@@ -43,6 +44,12 @@ namespace XamlBinding.Utility
                 // Can't log telemetry if App Insights fails to load, pretend that I have been disposed
                 this.disposed = true;
             }
+#else
+            this.solutionOptions = null;
+            this.config = null;
+            this.client = null;
+            this.disposed = true;
+#endif
         }
 
         public void Dispose()
