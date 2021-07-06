@@ -1,4 +1,7 @@
-﻿# XAML Binding Debug Output
+# Deprecated
+**This extension is deprecated. Visual Studio 2019+ now has a better XAML Binding Failure pane as part of the product.**
+
+# XAML Binding Debug Output
 [Download the Visual Studio 2019 extension](https://marketplace.visualstudio.com/items?itemName=PeterSpa.XamlBinding)
 
 This extension provides a tool window that shows XAML binding failures while debugging in Visual Studio 2019. The tool window makes it much easier to detect and understand the binding failures in your XAML that would normally be hidden in the output window.
